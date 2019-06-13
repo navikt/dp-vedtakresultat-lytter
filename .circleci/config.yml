@@ -20,7 +20,7 @@ workflow:
       - nais/deploy:
           repo: navikt/dp-vedtakresultat-lytter
           image: navikt/dp-vedtakresultat-lytter
-          github-app-id: 1337
+          github-app-id: 486694
           nais-template: nais.yaml
           environment: dev-fss
           team: Dagpenger

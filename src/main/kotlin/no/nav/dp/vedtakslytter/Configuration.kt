@@ -30,8 +30,8 @@ private val prodProperties = ConfigurationMap(
 )
 
 data class Application(
-        val httpPort: Int = config()[Key("application.httpPort", intType)],
-        val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) }
+    val httpPort: Int = config()[Key("application.httpPort", intType)],
+    val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) }
 )
 
 enum class Profile {
@@ -39,7 +39,7 @@ enum class Profile {
 }
 
 data class Configuration(
-        val application : Application = Application()
+    val application: Application = Application()
 )
 
 fun getEnvOrProp(propName: String): String? {
