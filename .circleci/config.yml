@@ -1,0 +1,26 @@
+version: 2.1
+
+orbs:
+  nais: navikt/nais-deployment@1.1.0
+
+
+jobs:
+  build:
+    docker:
+      - image: 'circleci/openjdk:11-jdk'
+    steps:
+      - checkout
+      - run: ./gradlew build
+      - nais/docker-deploy:
+          image: navikt/dp-vedtakresultat-lytter
+
+
+workflow:
+  push-docker-deploy-to-dev:
+      - nais/deploy:
+          repo: navikt/dp-vedtakresultat-lytter
+          image: navikt/dp-vedtakresultat-lytter
+          github-app-id: 1337
+          nais-template: nais.yaml
+          environment: dev-fss
+          team: Dagpenger

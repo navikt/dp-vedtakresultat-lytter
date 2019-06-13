@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version("1.3.31")
     application
@@ -59,7 +62,22 @@ java {
 tasks.withType<Test> {
     useJUnitPlatform()
     testLogging {
+        showExceptions = true
+        showStackTraces = true
+        exceptionFormat = TestExceptionFormat.FULL
         events("passed", "skipped", "failed")
+    }
+}
+
+tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "1.8" }
+
+spotless {
+    kotlin {
+        ktlint("0.33.0")
+    }
+    kotlinGradle {
+        target("*.gradle.kts")
+        ktlint("0.33.0")
     }
 }
 
