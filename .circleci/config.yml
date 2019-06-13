@@ -11,9 +11,6 @@ jobs:
     steps:
       - checkout
       - run: ./gradlew build
-      - nais/docker-deploy:
-          image: navikt/dp-vedtakresultat-lytter
-
 
 workflows:
   version: 2
