@@ -21,6 +21,7 @@ workflows:
       - build:
           context: NAIS deployment
       - nais/deploy:
+          name: dev_deploy
           context: NAIS deployment
           build-and-push-docker-image: false
           repo: navikt/dp-vedtakresultat-lytter
@@ -34,8 +35,9 @@ workflows:
       - hold:
           type: approval
           requires:
-            - build
+            - dev_deploy
       - nais/deploy:
+          name: prod_deploy
           build-and-push-docker-image: false
           context: NAIS deployment
           repo: navikt/dp-vedtakresultat-lytter
@@ -45,5 +47,4 @@ workflows:
           environment: prod-fss
           team: dagpenger
           requires:
-            - build
             - hold
