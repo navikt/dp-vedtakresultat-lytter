@@ -18,8 +18,10 @@ workflows:
   version: 2
   vedtakresultatlytter:
     jobs:
-      - build
+      - build:
+          context: NAIS deployment
       - nais/deploy:
+          context: NAIS deployment
           build-and-push-docker-image: false
           repo: navikt/dp-vedtakresultat-lytter
           image: navikt/dp-vedtakresultat-lytter
@@ -27,6 +29,8 @@ workflows:
           nais-template: nais.yaml
           environment: dev-fss
           team: dagpenger
+          requires:
+            - build
       - hold:
           type: approval
       - nais/deploy:
