@@ -45,6 +45,8 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.assertj:assertj-core:$assertjVersion")
+    testImplementation("io.ktor:ktor-client:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 }
 
 application {
