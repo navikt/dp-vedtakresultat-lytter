@@ -15,7 +15,8 @@ jobs:
           image: navikt/dp-vedtakresultat-lytter
 
 
-workflow:
+workflows:
+  version: 2
   build-test-deploy-to-dev:
     jobs:
       - build
