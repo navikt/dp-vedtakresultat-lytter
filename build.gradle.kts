@@ -15,6 +15,7 @@ val assertjVersion = "3.11.1"
 val avroVersion = "1.9.0"
 val confluentVersion = "5.2.1"
 val kafkaVersion = "2.2.1"
+val konfigVersion = "1.6.10.0"
 val ktorVersion = "1.2.0"
 val prometheusVersion = "0.6.0"
 
@@ -23,6 +24,9 @@ dependencies {
     //Http Server
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
+
+    // Miljøkonfigurasjon
+    implementation("com.natpryce:konfig:$konfigVersion")
 
     //Kafka
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")

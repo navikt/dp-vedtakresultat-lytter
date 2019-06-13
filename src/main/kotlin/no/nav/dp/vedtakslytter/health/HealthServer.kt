@@ -19,7 +19,7 @@ import io.prometheus.client.hotspot.DefaultExports
 object HealthServer {
 
     suspend fun startServer(port: Int): NettyApplicationEngine {
-                DefaultExports.initialize()
+        DefaultExports.initialize()
         return embeddedServer(Netty, port = port) {
             install(DefaultHeaders)
             routing {
@@ -34,11 +34,7 @@ object HealthServer {
                 }
 
                 get("/isReady") {
-                    if (Consumer.isRunning()) {
-                        call.respondText(text = "READY", contentType = ContentType.Text.Plain)
-                    } else {
-                        call.respondText(text = "NOTREADY", contentType = ContentType.Text.Plain, status = HttpStatusCode.FailedDependency)
-                    }
+                    call.respondText(text = "READY", contentType = ContentType.Text.Plain)
                 }
             }
         }
