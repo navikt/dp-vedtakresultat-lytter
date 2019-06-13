@@ -16,11 +16,28 @@ jobs:
 
 
 workflow:
-  push-docker-deploy-to-dev:
+  build-test-deploy-to-dev:
+    jobs:
+      - build
       - nais/deploy:
+        context: NAIS deployment
+        repo: navikt/dp-vedtakresultat-lytter
+        image: navikt/dp-vedtakresultat-lytter
+        github-app-id: 486694
+        nais-template: nais.yaml
+        environment: dev-fss
+        team: dagpenger
+  deploy-to-prod:
+    jobs:
+      - hold:
+          type: approval
+      - nais/generate-nais-deployment:
+          context: NAIS deployment
           repo: navikt/dp-vedtakresultat-lytter
           image: navikt/dp-vedtakresultat-lytter
           github-app-id: 486694
           nais-template: nais.yaml
-          environment: dev-fss
-          team: Dagpenger
+          environment: prod-fss
+          team: dagpenger
+          requires:
+            - hold
