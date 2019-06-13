@@ -43,4 +43,5 @@ workflows:
           environment: prod-fss
           team: dagpenger
           requires:
+            - build
             - hold
