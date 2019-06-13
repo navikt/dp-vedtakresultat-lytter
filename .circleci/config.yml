@@ -11,22 +11,22 @@ jobs:
     steps:
       - checkout
       - run: ./gradlew build
+      - nais/docker-deploy:
+          image: navikt/dp-vedtakresultat-lytter
 
 workflows:
   version: 2
-  build-test-deploy-to-dev:
+  vedtakresultatlytter:
     jobs:
       - build
       - nais/deploy:
-          context: NAIS deployment
+          build-and-push-docker-image: false
           repo: navikt/dp-vedtakresultat-lytter
           image: navikt/dp-vedtakresultat-lytter
           github-app-id: 486694
           nais-template: nais.yaml
           environment: dev-fss
           team: dagpenger
-  deploy-to-prod:
-    jobs:
       - hold:
           type: approval
       - nais/deploy:
