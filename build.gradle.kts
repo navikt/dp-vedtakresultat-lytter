@@ -6,7 +6,6 @@ plugins {
     application
     id("com.diffplug.gradle.spotless") version "3.23.0"
     id("com.github.johnrengelman.shadow") version "4.0.3"
-
 }
 
 repositories {
@@ -24,24 +23,23 @@ val prometheusVersion = "0.6.0"
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    //Http Server
+    // Http Server
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
 
     // Miljøkonfigurasjon
     implementation("com.natpryce:konfig:$konfigVersion")
 
-    //Kafka
+    // Kafka
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
 
     // Schema handling
     implementation("org.apache.avro:avro:$avroVersion")
     implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
 
-    //Metrics
+    // Metrics
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
-
 
     // Test related dependencies
     testImplementation(kotlin("test"))
@@ -80,4 +78,3 @@ spotless {
         ktlint("0.33.0")
     }
 }
-
