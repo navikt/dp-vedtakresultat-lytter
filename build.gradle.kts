@@ -43,12 +43,26 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
 
     // Test related dependencies
-    testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("io.ktor:ktor-client:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+}
+
+dependencyLocking {
+    lockAllConfigurations()
+}
+
+tasks.register("resolveAndLockDependencies") {
+    doFirst {
+        require(gradle.startParameter.isWriteDependencyLocks)
+    }
+    doLast {
+        configurations.filter {
+            it.isCanBeResolved
+        }.forEach { it.resolve() }
+    }
 }
 
 application {

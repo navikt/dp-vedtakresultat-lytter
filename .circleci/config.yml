@@ -9,8 +9,18 @@ jobs:
     docker:
       - image: 'circleci/openjdk:11-jdk'
     steps:
+      - restore_cache:
+          keys:
+            # When lockfile changes, use increasingly general patterns to restore cache
+            - gradle-repo-v1-{{ .Branch }}-{{ checksum "gradle/dependency-locks/compileClasspath.lockfile" }}
+            - gradle-repo-v1-{{ .Branch }}-
+            - gradle-repo-v1-
       - checkout
-      - run: ./gradlew build
+      - run: ./gradlew build --write-locks
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-repo-v1-{{ .Branch }}-{{ checksum "gradle/dependency-locks/compileClasspath.lockfile" }}
       - run:
           name: Save test results
           command: |
