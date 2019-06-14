@@ -36,7 +36,7 @@ workflows:
           build-and-push-docker-image: false
           repo: navikt/dp-vedtakresultat-lytter
           image: navikt/dp-vedtakresultat-lytter
-          github-app-id: 486694
+          github-app-id: 21626
           nais-template: nais.yaml
           environment: dev-fss
           team: dagpenger
@@ -52,7 +52,7 @@ workflows:
           context: NAIS deployment
           repo: navikt/dp-vedtakresultat-lytter
           image: navikt/dp-vedtakresultat-lytter
-          github-app-id: 486694
+          github-app-id: 21626
           nais-template: nais.yaml
           environment: prod-fss
           team: dagpenger
