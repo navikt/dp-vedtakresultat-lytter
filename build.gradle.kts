@@ -19,7 +19,9 @@ val confluentVersion = "5.2.1"
 val junitVersion = "5.4.1"
 val kafkaVersion = "2.2.1"
 val konfigVersion = "1.6.10.0"
+val kotlinLoggingVersion = "1.6.22"
 val ktorVersion = "1.2.0"
+val log4j2Version = "2.11.1"
 val prometheusVersion = "0.6.0"
 
 dependencies {
@@ -30,6 +32,13 @@ dependencies {
 
     // Miljøkonfigurasjon
     implementation("com.natpryce:konfig:$konfigVersion")
+
+    //Logging
+    implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
+    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
+    implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
 
     // Kafka
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")

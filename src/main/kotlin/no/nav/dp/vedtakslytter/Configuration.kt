@@ -1,45 +1,107 @@
 package no.nav.dp.vedtakslytter
 
-import com.natpryce.konfig.ConfigurationMap
-import com.natpryce.konfig.ConfigurationProperties
-import com.natpryce.konfig.EnvironmentVariables
-import com.natpryce.konfig.Key
-import com.natpryce.konfig.intType
-import com.natpryce.konfig.overriding
-import com.natpryce.konfig.stringType
+import com.natpryce.konfig.*
+import io.confluent.kafka.serializers.KafkaAvroDeserializer
+import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
+import org.apache.kafka.clients.CommonClientConfigs
+import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.common.config.SaslConfigs
+import org.apache.kafka.common.config.SslConfigs
+import org.apache.kafka.common.serialization.StringDeserializer
+import java.io.File
+import java.util.*
 
 private val localProperties = ConfigurationMap(
         mapOf(
                 "application.profile" to "LOCAL",
-                "application.httpPort" to "8099"
+                "application.httpPort" to "8099",
+                "kafka.bootstrapServer" to "localhost:9092",
+                "kafka.schemaRegistryServer" to "http://localhost:8081",
+                "kafka.topic" to "privat.dagpenger.vedtak",
+                "kafka.username" to "srvdp-vedtakresultat-lytter",
+                "kafka.password" to "ikkenoe",
+                "kafka.groupId" to "srvdp-vedtakresultat-lytter"
         )
 )
 
 private val devProperties = ConfigurationMap(
         mapOf(
                 "application.profile" to "DEV",
-                "application.httpPort" to "8099"
+                "application.httpPort" to "8099",
+                "kafka.bootstrapServer" to "localhost:9092",
+                "kafka.schemaRegistryServer" to "http://localhost:8081",
+                "kafka.topic" to "privat.dagpenger.vedtak",
+                "kafka.username" to "srvdp-vedtakresultat-lytter",
+                "kafka.password" to "ikkenoe",
+                "kafka.groupId" to "srvdp-vedtakresultat-lytter"
         )
 )
 
 private val prodProperties = ConfigurationMap(
         mapOf(
                 "application.profile" to "PROD",
-                "application.httpPort" to "8099"
+                "application.httpPort" to "8099",
+                "kafka.bootstrapServer" to "localhost:9092",
+                "kafka.schemaRegistryServer" to "http://localhost:8081",
+                "kafka.topic" to "privat.dagpenger.vedtak",
+                "kafka.username" to "srvdp-vedtakresultat-lytter",
+                "kafka.password" to "ikkenoe",
+                "kafka.groupId" to "srvdp-vedtakresultat-lytter"
+
         )
 )
 
 data class Application(
-    val httpPort: Int = config()[Key("application.httpPort", intType)],
-    val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) }
+        val httpPort: Int = config()[Key("application.httpPort", intType)],
+        val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) }
 )
+
+data class Kafka(
+        val bootstrapServer: String = config()[Key("kafka.bootstrapServer", stringType)],
+        val schemaRegistryServer: String = config()[Key("kafka.schemaRegistryServer", stringType)],
+        val topic: String = config()[Key("kafka.topic", stringType)],
+        val username: String = config()[Key("username", stringType)],
+        val password: String = config()[Key("password", stringType)],
+        val groupId: String = config()[Key("kafka.groupId", stringType)]
+) {
+    fun toConsumerProps(): Properties {
+        return Properties().apply {
+            put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer)
+            put(KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryServer)
+            put(ConsumerConfig.GROUP_ID_CONFIG, groupId)
+            put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)
+            put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer::class.java)
+            put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true)
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+            put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true)
+            putAll(credentials())
+        }
+    }
+
+    fun credentials(): Properties {
+        return Properties().apply {
+            Properties().apply {
+                put(SaslConfigs.SASL_MECHANISM, "PLAIN")
+                put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT")
+                put(SaslConfigs.SASL_JAAS_CONFIG,
+                        """org.apache.kafka.common.security.plain.PlainLoginModule required username="${username}" password="${password}";""")
+                System.getenv("NAV_TRUSTSTORE_PATH")?.let {
+                    put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL")
+                    put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(it).absolutePath)
+                    put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, System.getenv("NAV_TRUSTSTORE_PASSWORD"))
+                }
+            }
+        }
+    }
+}
 
 enum class Profile {
     LOCAL, DEV, PROD
 }
 
 data class Configuration(
-    val application: Application = Application()
+        val application: Application = Application(),
+        val kafka: Kafka = Kafka()
 )
 
 fun getEnvOrProp(propName: String): String? {
