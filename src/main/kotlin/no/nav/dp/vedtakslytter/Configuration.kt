@@ -18,8 +18,8 @@ private val localProperties = ConfigurationMap(
         "kafka.bootstrapServer" to "localhost:9092",
         "kafka.schemaRegistryServer" to "http://localhost:8081",
         "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
-        "kafka.username" to "srvdp-vedtakresultat",
-        "kafka.password" to "ikkenoe",
+        "username" to "srvdp-vedtakresultat",
+        "password" to "ikkenoe",
         "kafka.groupId" to "srvdp-vedtakresultat-lytter"
     )
 )
@@ -31,8 +31,8 @@ private val devProperties = ConfigurationMap(
         "kafka.bootstrapServer" to "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
         "kafka.schemaRegistryServer" to "https://kafka-schema-registry.nais.preprod.local",
         "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
-        "kafka.username" to "srvdp-vedtakresultat",
-        "kafka.password" to "ikkenoe",
+        "username" to "srvdp-vedtakresultat",
+        "password" to "ikkenoe",
         "kafka.groupId" to "srvdp-vedtakresultat-lytter"
     )
 )
@@ -44,8 +44,8 @@ private val prodProperties = ConfigurationMap(
         "kafka.bootstrapServer" to "a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00149.adeo.no:8443",
         "kafka.schemaRegistryServer" to "http://kafka-schema-registry.tpa:8081",
         "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
-        "kafka.username" to "srvdp-vedtakresultat",
-        "kafka.password" to "ikkenoe",
+        "username" to "srvdp-vedtakresultat",
+        "password" to "ikkenoe",
         "kafka.groupId" to "srvdp-vedtakresultat-lytter"
 
     )
@@ -60,8 +60,8 @@ data class Kafka(
     val bootstrapServer: String = config()[Key("kafka.bootstrapServer", stringType)],
     val schemaRegistryServer: String = config()[Key("kafka.schemaRegistryServer", stringType)],
     val topic: String = config()[Key("kafka.topic", stringType)],
-    val username: String = config()[Key("kafka.username", stringType)],
-    val password: String = config()[Key("kafka.password", stringType)],
+    val username: String = config()[Key("username", stringType)],
+    val password: String = config()[Key("password", stringType)],
     val groupId: String = config()[Key("kafka.groupId", stringType)]
 ) {
     fun toConsumerProps(): Properties {
