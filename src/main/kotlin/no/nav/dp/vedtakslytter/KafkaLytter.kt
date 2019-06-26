@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.errors.RetriableException
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 import java.util.Arrays
@@ -36,34 +37,40 @@ object KafkaLytter : CoroutineScope {
 
     suspend fun run() {
         launch {
-            ProducerConfig.LINGER_MS_CONFIG
             KafkaConsumer<String, GenericRecord>(config.kafka.toConsumerProps()).use { consumer ->
                 consumer.subscribe(listOf(config.kafka.topic))
                 while (job.isActive) {
-                    val records = consumer.poll(Duration.of(100, ChronoUnit.MILLIS))
-                    records.map {
-                        val record = it.value()
-                        Vedtak(
-                            table = record.get("table") as String,
-                            opType = record.get("op_type") as String,
-                            opTs = record.get("op_ts") as String,
-                            currentTs = record.get("current_ts") as String,
-                            pos = record.get("pos") as String,
-                            primaryKeys = record.get("primary_keys") as Array<String>,
-                            tokens = record.get("tokens") as Map<String, String>,
-                            vedtakId = record.get("VEDTAK_ID") as Double?,
-                            vedtakTypeKode = record.get("VEDTAKTYPEKODE") as String?,
-                            vedtakStatusKode = record.get("VEDTAKSTATUSKODE") as String?,
-                            utfallKode = record.get("UTFALLKODE") as String?,
-                            minsteInntektSubsumsjonsId = record.get("MINSTEINNTEKT_SUBSUMSJONSID") as String?,
-                            periodeSubsumsjonsId = record.get("PERIODE_SUBSUMSJONSID") as String?,
-                            satsSubsumsjonsId = record.get("GRUNNLAG_SUBSUMSJONSID") as String?,
-                            regUser = record.get("REG_USER") as String?,
-                            regDato = record.get("REG_DATO") as String?,
-                            modUser = record.get("MOD_USER") as String?,
-                            modDato = record.get("MOD_DATO") as String?
-                        )
-                    }.forEach { logger.info { it } }
+                    try {
+                        val records = consumer.poll(Duration.of(100, ChronoUnit.MILLIS))
+                        records.map {
+                            val record = it.value()
+                            Vedtak(
+                                table = record.get("table") as String,
+                                opType = record.get("op_type") as String,
+                                opTs = record.get("op_ts") as String,
+                                currentTs = record.get("current_ts") as String,
+                                pos = record.get("pos") as String,
+                                primaryKeys = record.get("primary_keys") as Array<String>,
+                                tokens = record.get("tokens") as Map<String, String>,
+                                vedtakId = record.get("VEDTAK_ID") as Double?,
+                                vedtakTypeKode = record.get("VEDTAKTYPEKODE") as String?,
+                                vedtakStatusKode = record.get("VEDTAKSTATUSKODE") as String?,
+                                utfallKode = record.get("UTFALLKODE") as String?,
+                                minsteInntektSubsumsjonsId = record.get("MINSTEINNTEKT_SUBSUMSJONSID") as String?,
+                                periodeSubsumsjonsId = record.get("PERIODE_SUBSUMSJONSID") as String?,
+                                satsSubsumsjonsId = record.get("GRUNNLAG_SUBSUMSJONSID") as String?,
+                                regUser = record.get("REG_USER") as String?,
+                                regDato = record.get("REG_DATO") as String?,
+                                modUser = record.get("MOD_USER") as String?,
+                                modDato = record.get("MOD_DATO") as String?
+                            )
+                        }.forEach { logger.info { it } }
+                    } catch (error : OutOfMemoryError) {
+                        logger.error("Out of memory while polling kafka", error)
+                        job.cancel()
+                    } catch (e: RetriableException) {
+                        logger.warn("Had a retriable exception, retrying", e)
+                    }
                 }
             }
         }

@@ -12,43 +12,43 @@ import java.io.File
 import java.util.*
 
 private val localProperties = ConfigurationMap(
-        mapOf(
-                "application.profile" to "LOCAL",
-                "application.httpPort" to "8099",
-                "kafka.bootstrapServer" to "localhost:9092",
-                "kafka.schemaRegistryServer" to "http://localhost:8081",
-                "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
-                "kafka.username" to "srvdp-vedtakresultat",
-                "kafka.password" to "ikkenoe",
-                "kafka.groupId" to "srvdp-vedtakresultat-lytter"
-        )
+    mapOf(
+        "application.profile" to "LOCAL",
+        "application.httpPort" to "8099",
+        "kafka.bootstrapServer" to "localhost:9092",
+        "kafka.schemaRegistryServer" to "http://localhost:8081",
+        "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
+        "kafka.username" to "srvdp-vedtakresultat",
+        "kafka.password" to "ikkenoe",
+        "kafka.groupId" to "srvdp-vedtakresultat-lytter"
+    )
 )
 
 private val devProperties = ConfigurationMap(
-        mapOf(
-                "application.profile" to "DEV",
-                "application.httpPort" to "8099",
-                "kafka.bootstrapServer" to "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
-                "kafka.schemaRegistryServer" to "https://kafka-schema-registry.nais.preprod.local",
-                "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
-                "kafka.username" to "srvdp-vedtakresultat",
-                "kafka.password" to "ikkenoe",
-                "kafka.groupId" to "srvdp-vedtakresultat-lytter"
-        )
+    mapOf(
+        "application.profile" to "DEV",
+        "application.httpPort" to "8099",
+        "kafka.bootstrapServer" to "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
+        "kafka.schemaRegistryServer" to "https://kafka-schema-registry.nais.preprod.local",
+        "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
+        "kafka.username" to "srvdp-vedtakresultat",
+        "kafka.password" to "ikkenoe",
+        "kafka.groupId" to "srvdp-vedtakresultat-lytter"
+    )
 )
 
 private val prodProperties = ConfigurationMap(
-        mapOf(
-                "application.profile" to "PROD",
-                "application.httpPort" to "8099",
-                "kafka.bootstrapServer" to "a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00149.adeo.no:8443",
-                "kafka.schemaRegistryServer" to "http://kafka-schema-registry.tpa:8081",
-                "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
-                "kafka.username" to "srvdp-vedtakresultat",
-                "kafka.password" to "ikkenoe",
-                "kafka.groupId" to "srvdp-vedtakresultat-lytter"
+    mapOf(
+        "application.profile" to "PROD",
+        "application.httpPort" to "8099",
+        "kafka.bootstrapServer" to "a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00149.adeo.no:8443",
+        "kafka.schemaRegistryServer" to "http://kafka-schema-registry.tpa:8081",
+        "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
+        "kafka.username" to "srvdp-vedtakresultat",
+        "kafka.password" to "ikkenoe",
+        "kafka.groupId" to "srvdp-vedtakresultat-lytter"
 
-        )
+    )
 )
 
 data class Application(
@@ -79,16 +79,16 @@ data class Kafka(
 
     fun credentials(): Properties {
         return Properties().apply {
-            Properties().apply {
-                put(SaslConfigs.SASL_MECHANISM, "PLAIN")
-                put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT")
-                put(SaslConfigs.SASL_JAAS_CONFIG,
-                        """org.apache.kafka.common.security.plain.PlainLoginModule required username="$username" password="$password";""")
-                System.getenv("NAV_TRUSTSTORE_PATH")?.let {
-                    put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL")
-                    put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(it).absolutePath)
-                    put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, System.getenv("NAV_TRUSTSTORE_PASSWORD"))
-                }
+            put(SaslConfigs.SASL_MECHANISM, "PLAIN")
+            put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT")
+            put(
+                SaslConfigs.SASL_JAAS_CONFIG,
+                """org.apache.kafka.common.security.plain.PlainLoginModule required username="$username" password="$password";"""
+            )
+            System.getenv("NAV_TRUSTSTORE_PATH")?.let {
+                put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL")
+                put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(it).absolutePath)
+                put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, System.getenv("NAV_TRUSTSTORE_PASSWORD"))
             }
         }
     }
