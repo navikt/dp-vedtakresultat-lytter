@@ -28,7 +28,7 @@ private val devProperties = ConfigurationMap(
         mapOf(
                 "application.profile" to "DEV",
                 "application.httpPort" to "8099",
-                "kafka.bootstrapServer" to "SASL_SSL://b27apvl00045.preprod.local:8443,SASL_SSL://b27apvl00046.preprod.local:8443,SASL_SSL://b27apvl00047.preprod.local:8443",
+                "kafka.bootstrapServer" to "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
                 "kafka.schemaRegistryServer" to "https://kafka-schema-registry.nais.preprod.local",
                 "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
                 "kafka.username" to "srvdp-vedtakresultat",
@@ -41,7 +41,7 @@ private val prodProperties = ConfigurationMap(
         mapOf(
                 "application.profile" to "PROD",
                 "application.httpPort" to "8099",
-                "kafka.bootstrapServer" to "SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443",
+                "kafka.bootstrapServer" to "a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00149.adeo.no:8443",
                 "kafka.schemaRegistryServer" to "http://kafka-schema-registry.tpa:8081",
                 "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
                 "kafka.username" to "srvdp-vedtakresultat",
