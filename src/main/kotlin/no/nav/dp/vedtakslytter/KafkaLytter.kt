@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.KafkaConsumer
-import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.errors.RetriableException
 import java.time.Duration
 import java.time.temporal.ChronoUnit
@@ -65,7 +64,7 @@ object KafkaLytter : CoroutineScope {
                                 modDato = record.get("MOD_DATO") as String?
                             )
                         }.forEach { logger.info { it } }
-                    } catch (error : OutOfMemoryError) {
+                    } catch (error: OutOfMemoryError) {
                         logger.error("Out of memory while polling kafka", error)
                         job.cancel()
                     } catch (e: RetriableException) {
