@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version("1.3.31")
+    kotlin("jvm") version("1.3.40")
     application
     id("com.diffplug.gradle.spotless") version "3.23.0"
     id("com.github.johnrengelman.shadow") version "4.0.3"
@@ -29,11 +29,12 @@ dependencies {
     // Http Server
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
+    implementation("io.ktor:ktor-metrics-micrometer:$ktorVersion")
 
     // Miljøkonfigurasjon
     implementation("com.natpryce:konfig:$konfigVersion")
 
-    //Logging
+    // Logging
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
@@ -50,6 +51,7 @@ dependencies {
     // Metrics
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.1.5")
 
     // Test related dependencies
     testImplementation(kotlin("test-junit5"))

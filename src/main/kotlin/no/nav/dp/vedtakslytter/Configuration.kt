@@ -17,8 +17,8 @@ private val localProperties = ConfigurationMap(
                 "application.httpPort" to "8099",
                 "kafka.bootstrapServer" to "localhost:9092",
                 "kafka.schemaRegistryServer" to "http://localhost:8081",
-                "kafka.topic" to "privat.dagpenger.vedtak",
-                "kafka.username" to "srvdp-vedtakresultat-lytter",
+                "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
+                "kafka.username" to "srvdp-vedtakresultat",
                 "kafka.password" to "ikkenoe",
                 "kafka.groupId" to "srvdp-vedtakresultat-lytter"
         )
@@ -30,8 +30,8 @@ private val devProperties = ConfigurationMap(
                 "application.httpPort" to "8099",
                 "kafka.bootstrapServer" to "localhost:9092",
                 "kafka.schemaRegistryServer" to "http://localhost:8081",
-                "kafka.topic" to "privat.dagpenger.vedtak",
-                "kafka.username" to "srvdp-vedtakresultat-lytter",
+                "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
+                "kafka.username" to "srvdp-vedtakresultat",
                 "kafka.password" to "ikkenoe",
                 "kafka.groupId" to "srvdp-vedtakresultat-lytter"
         )
@@ -43,8 +43,8 @@ private val prodProperties = ConfigurationMap(
                 "application.httpPort" to "8099",
                 "kafka.bootstrapServer" to "localhost:9092",
                 "kafka.schemaRegistryServer" to "http://localhost:8081",
-                "kafka.topic" to "privat.dagpenger.vedtak",
-                "kafka.username" to "srvdp-vedtakresultat-lytter",
+                "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
+                "kafka.username" to "srvdp-vedtakresultat",
                 "kafka.password" to "ikkenoe",
                 "kafka.groupId" to "srvdp-vedtakresultat-lytter"
 
@@ -52,17 +52,17 @@ private val prodProperties = ConfigurationMap(
 )
 
 data class Application(
-        val httpPort: Int = config()[Key("application.httpPort", intType)],
-        val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) }
+    val httpPort: Int = config()[Key("application.httpPort", intType)],
+    val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) }
 )
 
 data class Kafka(
-        val bootstrapServer: String = config()[Key("kafka.bootstrapServer", stringType)],
-        val schemaRegistryServer: String = config()[Key("kafka.schemaRegistryServer", stringType)],
-        val topic: String = config()[Key("kafka.topic", stringType)],
-        val username: String = config()[Key("username", stringType)],
-        val password: String = config()[Key("password", stringType)],
-        val groupId: String = config()[Key("kafka.groupId", stringType)]
+    val bootstrapServer: String = config()[Key("kafka.bootstrapServer", stringType)],
+    val schemaRegistryServer: String = config()[Key("kafka.schemaRegistryServer", stringType)],
+    val topic: String = config()[Key("kafka.topic", stringType)],
+    val username: String = config()[Key("kafka.username", stringType)],
+    val password: String = config()[Key("kafka.password", stringType)],
+    val groupId: String = config()[Key("kafka.groupId", stringType)]
 ) {
     fun toConsumerProps(): Properties {
         return Properties().apply {
@@ -71,7 +71,6 @@ data class Kafka(
             put(ConsumerConfig.GROUP_ID_CONFIG, groupId)
             put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)
             put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer::class.java)
-            put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true)
             put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
             put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true)
             putAll(credentials())
@@ -84,7 +83,7 @@ data class Kafka(
                 put(SaslConfigs.SASL_MECHANISM, "PLAIN")
                 put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT")
                 put(SaslConfigs.SASL_JAAS_CONFIG,
-                        """org.apache.kafka.common.security.plain.PlainLoginModule required username="${username}" password="${password}";""")
+                        """org.apache.kafka.common.security.plain.PlainLoginModule required username="$username" password="$password";""")
                 System.getenv("NAV_TRUSTSTORE_PATH")?.let {
                     put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL")
                     put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(it).absolutePath)
@@ -100,8 +99,8 @@ enum class Profile {
 }
 
 data class Configuration(
-        val application: Application = Application(),
-        val kafka: Kafka = Kafka()
+    val application: Application = Application(),
+    val kafka: Kafka = Kafka()
 )
 
 fun getEnvOrProp(propName: String): String? {

@@ -1,0 +1,82 @@
+{
+  "type" : "record",
+  "name" : "FERDIGSTILTE_DAGPENGEVEDTAK",
+  "namespace" : "GRENSESNITT",
+  "fields" : [ {
+    "name" : "table",
+    "type" : "string"
+  }, {
+    "name" : "op_type",
+    "type" : "string"
+  }, {
+    "name" : "op_ts",
+    "type" : "string"
+  }, {
+    "name" : "current_ts",
+    "type" : "string"
+  }, {
+    "name" : "pos",
+    "type" : "string"
+  }, {
+    "name" : "primary_keys",
+    "type" : {
+      "type" : "array",
+      "items" : "string"
+    }
+  }, {
+    "name" : "tokens",
+    "type" : {
+      "type" : "map",
+      "values" : "string"
+    },
+    "default" : { }
+  }, {
+    "name" : "VEDTAK_ID",
+    "type" : [ "null", "double" ],
+    "default" : null
+  }, {
+    "name" : "VEDTAKTYPEKODE",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "VEDTAKSTATUSKODE",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "UTFALLKODE",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "MINSTEINNTEKT_SUBSUMSJONSID",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "PERIODE_SUBSUMSJONSID",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "GRUNNLAG_SUBSUMSJONSID",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "SATS_SUBSUMSJONSID",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "REG_USER",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "REG_DATO",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "MOD_USER",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "MOD_DATO",
+    "type" : [ "null", "string" ],
+    "default" : null
+  } ]
+}
