@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
         val config = Configuration()
         HealthServer.startServer(config.application.httpPort).start(wait = false)
         KafkaLytter.apply {
-            create()
+            create(config)
             run()
         }
         GlobalScope.launch {

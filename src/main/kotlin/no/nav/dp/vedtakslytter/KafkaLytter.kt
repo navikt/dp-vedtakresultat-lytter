@@ -29,9 +29,9 @@ object KafkaLytter : CoroutineScope {
         return job.isActive
     }
 
-    fun create() {
+    fun create(config: Configuration) {
         this.job = Job()
-        this.config = Configuration()
+        this.config = config
     }
 
     suspend fun run() {
