@@ -9,10 +9,10 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="org.apache.cxf" level="debug">
-            <AppenderRef ref="ConsoleAppender"/>
+        <Logger name="no.nav" level="debug">
+            <AppenderRef ref="ConsoleAppender" />
         </Logger>
-        <Root level="info">
+        <Root level="warn">
             <AppenderRef ref="ConsoleAppender"/>
         </Root>
     </Loggers>
