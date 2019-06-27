@@ -36,6 +36,7 @@ object KafkaLytter : CoroutineScope {
 
     suspend fun run() {
         launch {
+            logger.info { config.kafka.username }
             KafkaConsumer<String, GenericRecord>(config.kafka.toConsumerProps()).use { consumer ->
                 consumer.subscribe(listOf(config.kafka.topic))
                 while (job.isActive) {
