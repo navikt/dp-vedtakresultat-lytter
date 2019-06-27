@@ -27,4 +27,4 @@ fun main(args: Array<String>) {
     }
 }
 
-val logger = LoggerFactory.getLogger("VedtaksLytter")
+val logger = LoggerFactory.getLogger("no.nav.dp.vedtakslytter.VedtaksLytter")
