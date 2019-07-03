@@ -50,10 +50,16 @@ workflows:
           nais-template: nais.yaml
           environment: dev-fss
           team: teamdagpenger
+          filters:
+            branches:
+              only: master
           requires:
             - build
       - hold:
           type: approval
+          filters:
+            branches:
+              only: master
           requires:
             - dev_deploy
       - nais/deploy:
@@ -66,5 +72,8 @@ workflows:
           nais-template: nais.yaml
           environment: prod-fss
           team: teamdagpenger
+          filters:
+            branches:
+              only: master
           requires:
             - hold
