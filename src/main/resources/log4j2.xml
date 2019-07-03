@@ -9,9 +9,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="no.nav" level="debug">
-            <AppenderRef ref="ConsoleAppender" />
-        </Logger>
+        <Logger name="no.nav" level="debug" />
         <Root level="warn">
             <AppenderRef ref="ConsoleAppender"/>
         </Root>
