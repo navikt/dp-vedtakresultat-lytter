@@ -33,7 +33,12 @@ private val devProperties = ConfigurationMap(
         "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
-        "kafka.groupId" to "srvdp-vedtakresultat-lytter"
+        "kafka.groupId" to "vedtakresultat-lytter",
+        "kafka.subsumsjon.topic" to "private-dagpenger-subsumsjon-brukt",
+        "regel.api.url" to "http://dp-regel-api",
+        "oidc.sts.issuerurl" to "http://localhost",
+        "srvdp.vedtakresultat.lytter.username" to "srvdp-vedtakresultat",
+        "srvdp.vedtakresultat.lytter.password" to "srvdp-passord"
     )
 )
 

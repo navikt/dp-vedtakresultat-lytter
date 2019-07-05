@@ -43,8 +43,8 @@ object KafkaLytter : CoroutineScope {
                 while (job.isActive) {
                     try {
                         val records = consumer.poll(Duration.of(100, ChronoUnit.MILLIS))
-                        records.map {
-                            Vedtak.fromGenericRecord(it.value())
+                        records.asSequence().map {
+                            it.key() to Vedtak.fromGenericRecord(it.value())
                         }.forEach { logger.info { it } }
                     } catch (error: OutOfMemoryError) {
                         logger.error("Out of memory while polling kafka", error)
