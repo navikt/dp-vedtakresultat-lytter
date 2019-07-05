@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
         GlobalScope.launch {
             while (true) {
                 if (KafkaLytter.isRunning()) {
-                    logger.info("Still running")
+                    logger.trace("Still running")
                 }
                 delay(TimeUnit.SECONDS.toMillis(60))
             }

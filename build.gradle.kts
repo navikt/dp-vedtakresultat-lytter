@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version("1.3.40")
+    kotlin("jvm") version("1.3.41")
     application
     id("com.diffplug.gradle.spotless") version "3.23.0"
     id("com.github.johnrengelman.shadow") version "4.0.3"
@@ -13,7 +13,7 @@ repositories {
     maven("http://packages.confluent.io/maven")
 }
 
-val assertjVersion = "3.11.1"
+val assertjVersion = "3.12.2"
 val avroVersion = "1.9.0"
 val confluentVersion = "5.2.1"
 val junitVersion = "5.4.1"
@@ -21,7 +21,7 @@ val kafkaVersion = "2.2.1"
 val konfigVersion = "1.6.10.0"
 val kotlinLoggingVersion = "1.6.22"
 val ktorVersion = "1.2.0"
-val log4j2Version = "2.11.1"
+val log4j2Version = "2.12.0"
 val prometheusVersion = "0.6.0"
 
 dependencies {
