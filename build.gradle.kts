@@ -16,7 +16,7 @@ repositories {
 val assertjVersion = "3.12.2"
 val avroVersion = "1.9.0"
 val confluentVersion = "5.2.1"
-val junitVersion = "5.4.1"
+val junitVersion = "5.5.0"
 val kafkaVersion = "2.2.1"
 val konfigVersion = "1.6.10.0"
 val kotlinLoggingVersion = "1.6.22"
@@ -59,6 +59,12 @@ dependencies {
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("io.ktor:ktor-client:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+}
+
+configurations {
+    this.all {
+        exclude(group = "ch.qos.logback")
+    }
 }
 
 dependencyLocking {
