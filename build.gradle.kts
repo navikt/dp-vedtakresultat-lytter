@@ -66,6 +66,7 @@ dependencies {
     // Metrics
     implementation(Prometheus.hotspot)
     implementation(Prometheus.common)
+    implementation(Prometheus.log4j2)
     implementation(Micrometer.prometheusRegistry)
 
     // Test related dependencies
