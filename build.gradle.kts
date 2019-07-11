@@ -2,63 +2,80 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version("1.3.41")
+    kotlin("jvm") version Kotlin.version
     application
-    id("com.diffplug.gradle.spotless") version "3.23.0"
-    id("com.github.johnrengelman.shadow") version "4.0.3"
+    id(Spotless.spotless) version Spotless.version
+    id(Shadow.shadow) version Shadow.version
 }
 
 repositories {
     jcenter()
-    maven("http://packages.confluent.io/maven")
+    maven("http://packages.confluent.io/maven/")
+    maven("https://jitpack.io")
 }
 
-val assertjVersion = "3.12.2"
-val avroVersion = "1.9.0"
-val confluentVersion = "5.2.1"
-val junitVersion = "5.5.0"
-val kafkaVersion = "2.2.1"
-val konfigVersion = "1.6.10.0"
-val kotlinLoggingVersion = "1.6.22"
-val ktorVersion = "1.2.0"
-val log4j2Version = "2.12.0"
-val prometheusVersion = "0.6.0"
-
+configurations {
+    "implementation" {
+        exclude(group = "org.slf4j", module = "slf4j-log4j12")
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+    }
+    "testImplementation" {
+        exclude(group = "org.slf4j", module = "slf4j-log4j12")
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+    }
+}
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
     // Http Server
-    implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-auth:$ktorVersion")
-    implementation("io.ktor:ktor-metrics-micrometer:$ktorVersion")
+    implementation(Ktor.serverNetty)
+    implementation(Ktor.auth)
+    implementation(Ktor.micrometerMetrics)
+
+    // Http Klient
+    implementation(Fuel.fuel)
+    implementation(Fuel.library("coroutines"))
+    implementation(Fuel.fuelMoshi)
+    implementation(Dagpenger.Biblioteker.ktorUtils)
+
+    // Json (de)serialisering
+    implementation(Moshi.moshi)
+    implementation(Moshi.moshiKotlin)
+    implementation(Moshi.moshiAdapters)
+
+    // Unik id
+    implementation(Ulid.ulid)
 
     // Miljøkonfigurasjon
-    implementation("com.natpryce:konfig:$konfigVersion")
+    implementation(Konfig.konfig)
 
     // Logging
-    implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
-    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
-    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
-    implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
+    implementation(Kotlin.Logging.kotlinLogging)
+    implementation(Log4j2.api)
+    implementation(Log4j2.core)
+    implementation(Log4j2.slf4j)
+    implementation(Log4j2.Logstash.logstashLayout)
 
     // Kafka
-    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
+    implementation(Kafka.clients)
 
     // Schema handling
-    implementation("org.apache.avro:avro:$avroVersion")
-    implementation("io.confluent:kafka-avro-serializer:$confluentVersion")
+    implementation(Avro.avro)
+    implementation(Kafka.Confluent.avroStreamSerdes)
 
     // Metrics
-    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.1.5")
+    implementation(Prometheus.hotspot)
+    implementation(Prometheus.common)
+    implementation(Micrometer.prometheusRegistry)
 
     // Test related dependencies
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-    testImplementation("org.assertj:assertj-core:$assertjVersion")
-    testImplementation("io.ktor:ktor-client:$ktorVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation(Junit5.engine)
+    testImplementation(Assertj.core)
+    testImplementation(Ktor.library("client"))
+    testImplementation(Ktor.ktorTest)
+    testImplementation(KafkaEmbedded.env)
+    testImplementation(Mockk.mockk)
 }
 
 configurations {
