@@ -77,6 +77,7 @@ dependencies {
     testImplementation(Ktor.ktorTest)
     testImplementation(KafkaEmbedded.env)
     testImplementation(Mockk.mockk)
+    testImplementation(Wiremock.standalone)
 }
 
 configurations {

@@ -8,11 +8,13 @@ import mu.KotlinLogging
 val ulid = ULID()
 val subsumsjonAdapter = moshiInstance.adapter(SubsumsjonBrukt::class.java)
 val LOGGER = KotlinLogging.logger {}
+
 class RegelApiKlient(private val regelApiBaseUrl: String, val apiKey: String) {
     fun orienterOmSubsumsjon(subsumsjonBrukt: SubsumsjonBrukt): Int {
         val jsonBody = subsumsjonAdapter.toJson(subsumsjonBrukt)
         val subsumsjonsUrl = "$regelApiBaseUrl/subsumsjonbrukt"
         val (_, _, result) = with(subsumsjonsUrl.httpPost()) {
+            header("Content-Type", "application/json")
             header("X-API-KEY", apiKey)
             header("Nav-Consumer-Id", "dp-vedtakresultat-lytter")
             header("Nav-Call-Id", ulid.nextULID())
