@@ -22,7 +22,7 @@ class RegelApiKlient(private val regelApiBaseUrl: String, val apiKey: String) {
         return result.fold(
             success = { 200 },
             failure = { e ->
-                LOGGER.warn("Klarte ikke å orientere om subsumsjon $subsumsjonBrukt", e)
+                LOGGER.error("Klarte ikke å orientere om subsumsjon $subsumsjonBrukt", e)
                 e.response.statusCode
             }
         )

@@ -124,7 +124,7 @@ object KafkaLytter : CoroutineScope {
         }
         return when (status.await()) {
             200 -> {
-                produceMessage(subsumsjonBrukt)
+                //produceMessage(subsumsjonBrukt)
                 true
             }
             else -> {
@@ -147,7 +147,7 @@ object KafkaLytter : CoroutineScope {
                     LOGGER.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${d.offset()}" }
                 }
                 if (e != null) {
-                    LOGGER.warn("Kunne ikke sende bekreftelse på subsumsjon", e)
+                    LOGGER.error("Kunne ikke sende bekreftelse på subsumsjon", e)
                 }
             }
         }
