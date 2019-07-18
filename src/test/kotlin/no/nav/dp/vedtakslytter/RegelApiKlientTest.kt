@@ -43,7 +43,7 @@ class RegelApiKlientTest {
             WireMock.post(WireMock.urlEqualTo("//subsumsjonbrukt"))
                 .withHeader("Content-Type", WireMock.equalTo("application/json"))
                 .withHeader("X-API-KEY", WireMock.equalTo(exampleApiKey))
-                .willReturn(WireMock.aResponse().withStatus(200))
+                .willReturn(WireMock.aResponse().withStatus(202))
         )
         val regelApiClient = RegelApiKlient(regelApiBaseUrl = server.url(""), apiKey = exampleApiKey)
         val r = regelApiClient.orienterOmSubsumsjon(eksempelSubsumsjon)

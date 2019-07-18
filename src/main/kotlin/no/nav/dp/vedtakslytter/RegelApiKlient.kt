@@ -19,10 +19,13 @@ class RegelApiKlient(private val regelApiBaseUrl: String, val apiKey: String) {
             header("Nav-Consumer-Id", "dp-vedtakresultat-lytter")
             header("Nav-Call-Id", ulid.nextULID())
             body(jsonBody)
-            responseObject(moshiDeserializerOf(String::class.java))
+            response()
         }
         return result.fold(
-            success = { 200 },
+            success = {
+                LOGGER.info("Orienterte om subsumsjon $subsumsjonBrukt")
+                200
+            },
             failure = { e ->
                 LOGGER.error("Klarte ikke å orientere om subsumsjon $subsumsjonBrukt", e)
                 e.response.statusCode

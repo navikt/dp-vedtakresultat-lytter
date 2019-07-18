@@ -27,10 +27,17 @@ jobs:
             mkdir -p ~/test-results/junit/
             find . -type f -regex ".*/build/test-results/test/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
+      - run:
+          name: Save test report
+          command: |
+            mkdir -p ~/test-reports/
+            cp -r build/reports/tests/test ~/test-reports/
+          when: always
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+
       - nais/docker-deploy:
           image: navikt/dp-vedtakresultat-lytter
 
