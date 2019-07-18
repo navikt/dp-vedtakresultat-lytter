@@ -17,6 +17,10 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.errors.RetriableException
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.coroutines.CoroutineContext
 
@@ -162,22 +166,18 @@ fun Double.roundedString(): String {
     }
 }
 
-enum class SubsumsjonsType {
-    MINSTEINNTEKT, PERIODE, GRUNNLAG, SATS
-}
-
 data class SubsumsjonBrukt(
     val eksternId: String,
     val id: String,
-    val arenaTs: String,
+    val arenaTs: ZonedDateTime,
     val ts: Long = Instant.now().toEpochMilli()
 )
 
 data class Vedtak(
     val table: String,
     val opType: String,
-    val opTs: String,
-    val currentTs: String,
+    val opTs: ZonedDateTime,
+    val currentTs: ZonedDateTime,
     val pos: String,
     val primaryKeys: List<String> = emptyList(),
     val tokens: Map<String, String> = emptyMap(),
@@ -198,8 +198,8 @@ data class Vedtak(
         return GenericRecordBuilder(AvroDeserializer.schema)
             .set("table", table)
             .set("op_type", opType)
-            .set("op_ts", opTs)
-            .set("current_ts", currentTs)
+            .set("op_ts", opTs.format(arenaOpTsFormat))
+            .set("current_ts", currentTs.format(arenaCurrentTsFormat))
             .set("primary_keys", primaryKeys)
             .set("pos", pos)
             .set("tokens", tokens)
@@ -217,12 +217,15 @@ data class Vedtak(
     }
 
     companion object {
+        val arenaOpTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSSSSS]")
+        val arenaCurrentTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
+        val oslo = ZoneId.of("Europe/Oslo")
         fun fromGenericRecord(record: GenericRecord): Vedtak {
             return Vedtak(
                 table = record.get("table").toString(),
                 opType = record.get("op_type").toString(),
-                opTs = record.get("op_ts").toString(),
-                currentTs = record.get("current_ts").toString(),
+                opTs = LocalDateTime.parse(record.get("op_ts").toString(), arenaOpTsFormat).atZone(oslo),
+                currentTs = LocalDateTime.parse(record.get("current_ts").toString(), arenaCurrentTsFormat).atZone(oslo),
                 pos = record.get("pos").toString(),
                 primaryKeys = record.get("primary_keys") as List<String>,
                 tokens = record.get("tokens") as Map<String, String>,

@@ -132,3 +132,11 @@ spotless {
         ktlint("0.33.0")
     }
 }
+
+tasks.named("shadowJar") {
+    dependsOn("test")
+}
+
+tasks.named("compileKotlin") {
+    dependsOn("spotlessKotlin")
+}

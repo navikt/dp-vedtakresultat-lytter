@@ -7,7 +7,7 @@ import org.apache.avro.io.EncoderFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
-import java.time.Instant
+import java.time.ZonedDateTime
 
 class AvroDeserializerTest {
 
@@ -17,8 +17,8 @@ class AvroDeserializerTest {
         val vedtak = Vedtak(
             table = "table",
             opType = "I",
-            opTs = "-1",
-            currentTs = Instant.now().toEpochMilli().toString(),
+            opTs = ZonedDateTime.now().minusHours(4),
+            currentTs = ZonedDateTime.now(),
             pos = "",
             primaryKeys = listOf("vedtakId"),
             tokens = mapOf("test" to "token"),

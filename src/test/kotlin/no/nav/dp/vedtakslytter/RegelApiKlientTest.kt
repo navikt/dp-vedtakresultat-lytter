@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 class RegelApiKlientTest {
     companion object {
@@ -38,7 +37,7 @@ class RegelApiKlientTest {
         val eksempelSubsumsjon = SubsumsjonBrukt(
             id = "123",
             eksternId = "789",
-            arenaTs = LocalDateTime.now().minusHours(6).toInstant(ZoneOffset.UTC).toString()
+            arenaTs = ZonedDateTime.now().minusHours(6)
         )
         WireMock.stubFor(
             WireMock.post(WireMock.urlEqualTo("//subsumsjonbrukt"))
@@ -63,7 +62,7 @@ class RegelApiKlientTest {
         val eksempelSubsumsjon = SubsumsjonBrukt(
             id = "123",
             eksternId = "789",
-            arenaTs = LocalDateTime.now().minusHours(6).toInstant(ZoneOffset.UTC).toString()
+            arenaTs = ZonedDateTime.now().minusHours(6)
         )
         WireMock.stubFor(
             WireMock.post(WireMock.urlEqualTo("//subsumsjonbrukt"))

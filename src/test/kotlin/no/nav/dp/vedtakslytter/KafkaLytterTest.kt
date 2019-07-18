@@ -18,8 +18,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.ZonedDateTime
 import java.util.UUID
 
 class KafkaLytterTest {
@@ -101,8 +100,8 @@ class KafkaLytterTest {
         vedtakId = 1337.0,
         table = "",
         opType = "I",
-        opTs = LocalDateTime.now().minusHours(6).format(DateTimeFormatter.ISO_DATE_TIME),
-        currentTs = LocalDateTime.now().minusHours(3).format(DateTimeFormatter.ISO_DATE_TIME),
+        opTs = ZonedDateTime.now().minusHours(6),
+        currentTs = ZonedDateTime.now().minusHours(3),
         pos = "",
         primaryKeys = listOf("VEDTAKID"),
         vedtakTypeKode = "O",
