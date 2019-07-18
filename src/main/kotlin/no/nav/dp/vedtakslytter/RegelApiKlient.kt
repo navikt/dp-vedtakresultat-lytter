@@ -1,7 +1,6 @@
 package no.nav.dp.vedtakslytter
 
 import com.github.kittinunf.fuel.httpPost
-import com.github.kittinunf.fuel.moshi.moshiDeserializerOf
 import de.huxhorn.sulky.ulid.ULID
 import mu.KotlinLogging
 
