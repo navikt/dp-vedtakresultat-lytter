@@ -7,9 +7,11 @@ import org.apache.avro.io.EncoderFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 class AvroDeserializerTest {
+    val oslo = ZoneId.of("Europe/Oslo")
 
     @Test
     fun `can read an object`() {
@@ -17,8 +19,8 @@ class AvroDeserializerTest {
         val vedtak = Vedtak(
             table = "table",
             opType = "I",
-            opTs = ZonedDateTime.now().minusHours(4),
-            currentTs = ZonedDateTime.now(),
+            opTs = ZonedDateTime.now(oslo).minusHours(4),
+            currentTs = ZonedDateTime.now(oslo),
             pos = "",
             primaryKeys = listOf("vedtakId"),
             tokens = mapOf("test" to "token"),
