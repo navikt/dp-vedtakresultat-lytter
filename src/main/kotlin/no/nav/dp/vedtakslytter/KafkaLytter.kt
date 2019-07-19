@@ -128,7 +128,7 @@ object KafkaLytter : CoroutineScope {
         }
         return when (status.await()) {
             200 -> {
-                // produceMessage(subsumsjonBrukt)
+                produceMessage(subsumsjonBrukt)
                 true
             }
             else -> {
