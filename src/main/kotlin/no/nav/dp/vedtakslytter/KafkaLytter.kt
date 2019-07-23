@@ -1,18 +1,17 @@
 package no.nav.dp.vedtakslytter
 
+import com.squareup.moshi.JsonAdapter
+import io.prometheus.client.Counter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import no.nav.dp.vedtakslytter.avro.AvroDeserializer
-import no.nav.dp.vedtakslytter.avro.AvroSerializer
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.generic.GenericRecordBuilder
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.errors.RetriableException
 import java.time.Duration
@@ -28,7 +27,8 @@ object KafkaLytter : CoroutineScope {
     val logger = KotlinLogging.logger {}
     lateinit var job: Job
     lateinit var config: Configuration
-    lateinit var regelApiKlient: RegelApiKlient
+    val MESSAGES_SENT = Counter.build().name("subsumsjon_brukt_sendt").help("Subsumsjoner sendt videre til Kafka").register()
+    val FAILED_KAFKA_OPS = Counter.build().name("subsumsjon_brukt_error").help("Feil i sending av transformert melding").register()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
 
@@ -41,13 +41,12 @@ object KafkaLytter : CoroutineScope {
         return job.isActive
     }
 
-    fun create(config: Configuration, regelApiKlient: RegelApiKlient) {
+    fun create(config: Configuration) {
         this.job = Job()
         this.config = config
-        this.regelApiKlient = regelApiKlient
     }
 
-    suspend fun run() {
+    fun run() {
         launch {
             logger.info("Starter kafka consumer")
             KafkaConsumer<String, GenericRecord>(config.kafka.toConsumerProps()).use { consumer ->
@@ -58,14 +57,7 @@ object KafkaLytter : CoroutineScope {
                         records.asSequence().map {
                             it.key() to Vedtak.fromGenericRecord(it.value())
                         }.onEach { logger.info { it } }
-                            .forEach { (k, v) ->
-                                if (!handleVedtak(v)) {
-                                    retry(k, v)
-                                }
-                            }
-                    } catch (error: OutOfMemoryError) {
-                        logger.error("Out of memory while polling kafka", error)
-                        job.cancel()
+                            .forEach { (_, v) -> handleVedtak(v) }
                     } catch (e: RetriableException) {
                         logger.warn("Had a retriable exception, retrying", e)
                     }
@@ -74,71 +66,54 @@ object KafkaLytter : CoroutineScope {
         }
     }
 
-    private fun retry(key: String, vedtak: Vedtak) {
-        KafkaProducer<String, GenericRecord>(config.kafka.toProducerProps().apply {
-            set(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroSerializer::class.java)
-        }).use { p ->
-            val record = ProducerRecord(config.kafka.topic, key, vedtak.toGenericRecord())
-            p.send(record)
-        }
-    }
-
-    suspend fun handleVedtak(vedtak: Vedtak): Boolean {
-        return listOfNotNull(vedtak.minsteInntektSubsumsjonsId?.let {
+    fun handleVedtak(vedtak: Vedtak) {
+        vedtak.minsteInntektSubsumsjonsId?.let {
             orienterOmSubsumsjon(
                 SubsumsjonBrukt(
                     id = it,
                     eksternId = vedtak.vedtakId.roundedString(),
-                    arenaTs = vedtak.opTs
+                    arenaTs = vedtak.opTs,
+                    utfall = vedtak.utfallKode,
+                    vedtakStatus = vedtak.vedtakStatusKode
                 )
             )
-        },
-            vedtak.periodeSubsumsjonsId?.let {
-                orienterOmSubsumsjon(
-                    SubsumsjonBrukt(
-                        eksternId = vedtak.vedtakId.roundedString(),
-                        id = it,
-                        arenaTs = vedtak.opTs
-                    )
-                )
-            },
-            vedtak.grunnlagSubsumsjonsId?.let {
-                orienterOmSubsumsjon(
-                    SubsumsjonBrukt(
-                        eksternId = vedtak.vedtakId.roundedString(),
-                        id = it,
-                        arenaTs = vedtak.opTs
-                    )
-                )
-            },
-            vedtak.satsSubsumsjonsId?.let {
-                orienterOmSubsumsjon(
-                    SubsumsjonBrukt(
-                        eksternId = vedtak.vedtakId.toString(),
-                        id = it,
-                        arenaTs = vedtak.opTs
-                    )
-                )
-            }).all { success -> success }
-    }
-
-    private suspend fun orienterOmSubsumsjon(subsumsjonBrukt: SubsumsjonBrukt): Boolean {
-        val status = async {
-            regelApiKlient.orienterOmSubsumsjon(subsumsjonBrukt)
         }
-        return when (status.await()) {
-            200 -> {
-                produceMessage(subsumsjonBrukt)
-                true
-            }
-            else -> {
-                LOGGER.error("Kunne ikke orientere om subsumsjon $subsumsjonBrukt")
-                false
-            }
+        vedtak.periodeSubsumsjonsId?.let {
+            orienterOmSubsumsjon(
+                SubsumsjonBrukt(
+                    eksternId = vedtak.vedtakId.roundedString(),
+                    id = it,
+                    arenaTs = vedtak.opTs,
+                    utfall = vedtak.utfallKode,
+                    vedtakStatus = vedtak.vedtakStatusKode
+                )
+            )
+        }
+        vedtak.grunnlagSubsumsjonsId?.let {
+            orienterOmSubsumsjon(
+                SubsumsjonBrukt(
+                    eksternId = vedtak.vedtakId.roundedString(),
+                    id = it,
+                    arenaTs = vedtak.opTs,
+                    utfall = vedtak.utfallKode,
+                    vedtakStatus = vedtak.vedtakStatusKode
+                )
+            )
+        }
+        vedtak.satsSubsumsjonsId?.let {
+            orienterOmSubsumsjon(
+                SubsumsjonBrukt(
+                    eksternId = vedtak.vedtakId.toString(),
+                    id = it,
+                    arenaTs = vedtak.opTs,
+                    utfall = vedtak.utfallKode,
+                    vedtakStatus = vedtak.vedtakStatusKode
+                )
+            )
         }
     }
 
-    private fun produceMessage(subsumsjonBrukt: SubsumsjonBrukt) {
+    private fun orienterOmSubsumsjon(subsumsjonBrukt: SubsumsjonBrukt) {
         KafkaProducer<String, String>(config.kafka.toProducerProps()).use { p ->
             p.send(
                 ProducerRecord(
@@ -148,15 +123,18 @@ object KafkaLytter : CoroutineScope {
                 )
             ) { d, e ->
                 if (d != null) {
-                    LOGGER.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${d.offset()}" }
-                }
-                if (e != null) {
-                    LOGGER.error("Kunne ikke sende bekreftelse på subsumsjon", e)
+                    MESSAGES_SENT.inc()
+                    logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${d.offset()}" }
+                } else if (e != null) {
+                    FAILED_KAFKA_OPS.inc()
+                    logger.error("Kunne ikke sende bekreftelse på subsumsjon", e)
                 }
             }
         }
     }
 }
+
+val subsumsjonAdapter: JsonAdapter<SubsumsjonBrukt> = moshiInstance.adapter(SubsumsjonBrukt::class.java)
 
 fun Double.roundedString(): String {
     return if (this.toLong().toDouble().equals(this)) {
@@ -170,7 +148,9 @@ data class SubsumsjonBrukt(
     val eksternId: String,
     val id: String,
     val arenaTs: ZonedDateTime,
-    val ts: Long = Instant.now().toEpochMilli()
+    val ts: Long = Instant.now().toEpochMilli(),
+    val utfall: String?,
+    val vedtakStatus: String?
 )
 
 data class Vedtak(

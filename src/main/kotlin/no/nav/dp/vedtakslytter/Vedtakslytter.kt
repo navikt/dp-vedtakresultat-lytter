@@ -12,10 +12,9 @@ fun main(args: Array<String>) {
     runBlocking {
         val config = Configuration()
 
-        val regelApiKlient = RegelApiKlient(config.regelApiUrl, config.auth.regelApiKey)
         HealthServer.startServer(config.application.httpPort).start(wait = false)
         KafkaLytter.apply {
-            create(config, regelApiKlient)
+            create(config)
             run()
         }
         GlobalScope.launch {
