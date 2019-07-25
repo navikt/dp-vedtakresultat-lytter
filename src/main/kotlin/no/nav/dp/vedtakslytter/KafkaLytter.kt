@@ -27,8 +27,11 @@ object KafkaLytter : CoroutineScope {
     val logger = KotlinLogging.logger {}
     lateinit var job: Job
     lateinit var config: Configuration
-    val MESSAGES_SENT = Counter.build().name("subsumsjon_brukt_sendt").help("Subsumsjoner sendt videre til Kafka").register()
-    val FAILED_KAFKA_OPS = Counter.build().name("subsumsjon_brukt_error").help("Feil i sending av transformert melding").register()
+    val MESSAGES_SENT = Counter.build().name("subsumsjon_brukt_sendt").help("Subsumsjoner sendt videre til Kafka")
+        .labelNames("type").register()
+    val MESSAGES_RECEIVED = Counter.build().name("vedtakresultat_mottatt").help("Vedtakresultat mottatt").register()
+    val FAILED_KAFKA_OPS =
+        Counter.build().name("subsumsjon_brukt_error").help("Feil i sending av transformert melding").register()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
 
@@ -57,6 +60,7 @@ object KafkaLytter : CoroutineScope {
                         records.asSequence().map {
                             it.key() to Vedtak.fromGenericRecord(it.value())
                         }.onEach { logger.info { it } }
+                            .onEach { MESSAGES_RECEIVED.inc() }
                             .forEach { (_, v) -> handleVedtak(v) }
                     } catch (e: RetriableException) {
                         logger.warn("Had a retriable exception, retrying", e)
@@ -75,7 +79,8 @@ object KafkaLytter : CoroutineScope {
                     arenaTs = vedtak.opTs,
                     utfall = vedtak.utfallKode,
                     vedtakStatus = vedtak.vedtakStatusKode
-                )
+                ),
+                SubsumsjonType.MINSTEINNTEKT
             )
         }
         vedtak.periodeSubsumsjonsId?.let {
@@ -86,7 +91,8 @@ object KafkaLytter : CoroutineScope {
                     arenaTs = vedtak.opTs,
                     utfall = vedtak.utfallKode,
                     vedtakStatus = vedtak.vedtakStatusKode
-                )
+                ),
+                SubsumsjonType.PERIODE
             )
         }
         vedtak.grunnlagSubsumsjonsId?.let {
@@ -97,7 +103,8 @@ object KafkaLytter : CoroutineScope {
                     arenaTs = vedtak.opTs,
                     utfall = vedtak.utfallKode,
                     vedtakStatus = vedtak.vedtakStatusKode
-                )
+                ),
+                SubsumsjonType.GRUNNLAG
             )
         }
         vedtak.satsSubsumsjonsId?.let {
@@ -108,12 +115,13 @@ object KafkaLytter : CoroutineScope {
                     arenaTs = vedtak.opTs,
                     utfall = vedtak.utfallKode,
                     vedtakStatus = vedtak.vedtakStatusKode
-                )
+                ),
+                SubsumsjonType.SATS
             )
         }
     }
 
-    private fun orienterOmSubsumsjon(subsumsjonBrukt: SubsumsjonBrukt) {
+    private fun orienterOmSubsumsjon(subsumsjonBrukt: SubsumsjonBrukt, subsumsjonType: SubsumsjonType) {
         KafkaProducer<String, String>(config.kafka.toProducerProps()).use { p ->
             p.send(
                 ProducerRecord(
@@ -123,7 +131,7 @@ object KafkaLytter : CoroutineScope {
                 )
             ) { d, e ->
                 if (d != null) {
-                    MESSAGES_SENT.inc()
+                    MESSAGES_SENT.labels(subsumsjonType.toString().toLowerCase()).inc()
                     logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${d.offset()}" }
                 } else if (e != null) {
                     FAILED_KAFKA_OPS.inc()
@@ -133,7 +141,9 @@ object KafkaLytter : CoroutineScope {
         }
     }
 }
-
+enum class SubsumsjonType {
+    SATS, GRUNNLAG, PERIODE, MINSTEINNTEKT
+}
 val subsumsjonAdapter: JsonAdapter<SubsumsjonBrukt> = moshiInstance.adapter(SubsumsjonBrukt::class.java)
 
 fun Double.roundedString(): String {
