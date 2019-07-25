@@ -28,7 +28,7 @@ object KafkaLytter : CoroutineScope {
     lateinit var job: Job
     lateinit var config: Configuration
     val MESSAGES_SENT = Counter.build().name("subsumsjon_brukt_sendt").help("Subsumsjoner sendt videre til Kafka")
-        .labelNames("type").register()
+        .labelNames("subsumsjonstype").register()
     val MESSAGES_RECEIVED = Counter.build().name("vedtakresultat_mottatt").help("Vedtakresultat mottatt").register()
     val FAILED_KAFKA_OPS =
         Counter.build().name("subsumsjon_brukt_error").help("Feil i sending av transformert melding").register()
