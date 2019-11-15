@@ -73,7 +73,7 @@ dependencies {
     // Test related dependencies
     testImplementation(kotlin("test-junit5"))
     testImplementation(Junit5.engine)
-    testImplementation(Assertj.core)
+    testImplementation(Junit5.kotlinRunner)
     testImplementation(Ktor.library("client"))
     testImplementation(Ktor.ktorTest)
     testImplementation(KafkaEmbedded.env)

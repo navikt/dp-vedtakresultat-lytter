@@ -12,10 +12,10 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import io.kotlintest.shouldBe
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.time.Duration
@@ -31,7 +31,8 @@ class KafkaLytterTest {
             autoStart = false,
             withSchemaRegistry = false,
             withSecurity = true,
-            topics = listOf(config.kafka.topic, config.kafka.subsumsjonBruktTopic)
+            topicInfos = listOf(
+                KafkaEnvironment.TopicInfo(config.kafka.topic), KafkaEnvironment.TopicInfo(config.kafka.subsumsjonBruktTopic))
         )
 
         @BeforeAll
@@ -96,9 +97,9 @@ class KafkaLytterTest {
 
     @Test
     fun `Formats double ids correctly`() {
-        assertThat(145.5.roundedString()).isEqualTo("145.5")
-        assertThat(145.0.roundedString()).isEqualTo("145")
-        assertThat(145.55555.roundedString()).isEqualTo("145.55555")
+        145.5.roundedString() shouldBe "145.5"
+        145.0.roundedString() shouldBe "145"
+        145.55555.roundedString() shouldBe "145.55555"
     }
     val ulid = ULID()
     val nyRettighetMedMinsteInntektSubsumsjon = Vedtak(

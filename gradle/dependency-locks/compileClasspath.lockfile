@@ -9,7 +9,8 @@ com.github.kittinunf.fuel:fuel-coroutines:2.2.1
 com.github.kittinunf.fuel:fuel-moshi:2.2.1
 com.github.kittinunf.fuel:fuel:2.2.1
 com.github.kittinunf.result:result:2.2.0
-com.github.navikt.dp-biblioteker:ktor-utils:2019.10.04-11.45.e5eff2e37bb7
+com.github.luben:zstd-jni:1.4.0-1
+com.github.navikt.dp-biblioteker:ktor-utils:2019.11.15-08.17.056900b17f09
 com.googlecode.json-simple:json-simple:1.1.1
 com.natpryce:konfig:1.6.10.0
 com.squareup.moshi:moshi-adapters:1.8.0
@@ -57,7 +58,7 @@ io.prometheus:simpleclient_log4j2:0.7.0
 jline:jline:0.9.94
 org.apache.avro:avro:1.8.2
 org.apache.commons:commons-compress:1.8.1
-org.apache.kafka:kafka-clients:2.0.1
+org.apache.kafka:kafka-clients:2.3.1
 org.apache.logging.log4j:log4j-api:2.12.1
 org.apache.logging.log4j:log4j-core:2.12.1
 org.apache.logging.log4j:log4j-slf4j-impl:2.12.1
@@ -83,7 +84,7 @@ org.jetbrains.kotlinx:kotlinx-io-jvm:0.1.15
 org.jetbrains.kotlinx:kotlinx-io:0.1.15
 org.jetbrains:annotations:13.0
 org.latencyutils:LatencyUtils:2.0.3
-org.lz4:lz4-java:1.4.1
+org.lz4:lz4-java:1.6.0
 org.slf4j:slf4j-api:1.7.26
 org.tukaani:xz:1.5
-org.xerial.snappy:snappy-java:1.1.7.1
+org.xerial.snappy:snappy-java:1.1.7.3
