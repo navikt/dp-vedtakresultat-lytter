@@ -62,13 +62,6 @@ workflows:
               only: master
           requires:
             - build
-      - hold:
-          type: approval
-          filters:
-            branches:
-              only: master
-          requires:
-            - dev_deploy
       - nais/deploy:
           name: prod_deploy
           build-and-push-docker-image: false
@@ -83,4 +76,4 @@ workflows:
             branches:
               only: master
           requires:
-            - hold
+            - dev_deploy
