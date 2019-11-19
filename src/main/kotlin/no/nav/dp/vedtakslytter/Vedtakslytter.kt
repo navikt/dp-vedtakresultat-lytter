@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import no.nav.dp.health.HealthServer
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
@@ -28,4 +29,4 @@ fun main(args: Array<String>) {
     }
 }
 
-val logger = LoggerFactory.getLogger("no.nav.dp.vedtakslytter.VedtaksLytter")
+val logger: Logger = LoggerFactory.getLogger("no.nav.dp.vedtakslytter.VedtaksLytter")
