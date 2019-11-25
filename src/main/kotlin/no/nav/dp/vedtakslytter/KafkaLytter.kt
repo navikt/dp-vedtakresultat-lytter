@@ -206,10 +206,11 @@ data class Vedtak(
             .set("MOD_DATO", modDato).build()
     }
 
+    @Suppress("UNCHECKED_CAST")
     companion object {
-        val arenaOpTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSSSSS]")
-        val arenaCurrentTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
-        val oslo = ZoneId.of("Europe/Oslo")
+        private val arenaOpTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSSSSS]")
+        private val arenaCurrentTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
+        private val oslo: ZoneId = ZoneId.of("Europe/Oslo")
         fun fromGenericRecord(record: GenericRecord): Vedtak {
             return Vedtak(
                 table = record.get("table").toString(),
