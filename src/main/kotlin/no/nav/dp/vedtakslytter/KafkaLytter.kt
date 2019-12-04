@@ -28,7 +28,7 @@ object KafkaLytter : CoroutineScope {
     lateinit var job: Job
     lateinit var config: Configuration
     val MESSAGES_SENT = Counter.build().name("subsumsjon_brukt_sendt").help("Subsumsjoner sendt videre til Kafka")
-        .labelNames("subsumsjonstype").register()
+        .labelNames("subsumsjonstype", "utfall", "status").register()
     val MESSAGES_RECEIVED = Counter.build().name("vedtakresultat_mottatt").help("Vedtakresultat mottatt").register()
     val FAILED_KAFKA_OPS =
         Counter.build().name("subsumsjon_brukt_error").help("Feil i sending av transformert melding").register()
@@ -131,7 +131,9 @@ object KafkaLytter : CoroutineScope {
                 )
             ) { d, e ->
                 if (d != null) {
-                    MESSAGES_SENT.labels(subsumsjonType.toString().toLowerCase()).inc()
+                    val utfall = subsumsjonBrukt.utfall ?: "ukjent"
+                    val vedtakstatus = subsumsjonBrukt.vedtakStatus ?: "ukjent"
+                    MESSAGES_SENT.labels(subsumsjonType.toString().toLowerCase(), utfall, vedtakstatus).inc()
                     logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${d.offset()}" }
                 } else if (e != null) {
                     FAILED_KAFKA_OPS.inc()
