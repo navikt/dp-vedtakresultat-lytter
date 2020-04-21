@@ -1,14 +1,14 @@
 package no.nav.dp.vedtakslytter.avro
 
+import java.io.ByteArrayOutputStream
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import no.nav.dp.vedtakslytter.Vedtak
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.EncoderFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.io.ByteArrayOutputStream
-import java.time.ZoneId
-import java.time.ZonedDateTime
 
 class AvroDeserializerTest {
     val oslo = ZoneId.of("Europe/Oslo")

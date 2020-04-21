@@ -1,7 +1,15 @@
 package no.nav.dp.vedtakslytter
 
-import com.natpryce.konfig.*
+import com.natpryce.konfig.ConfigurationMap
+import com.natpryce.konfig.ConfigurationProperties
+import com.natpryce.konfig.EnvironmentVariables
+import com.natpryce.konfig.Key
+import com.natpryce.konfig.intType
+import com.natpryce.konfig.overriding
+import com.natpryce.konfig.stringType
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
+import java.io.File
+import java.util.Properties
 import no.nav.dagpenger.ktor.auth.ApiKeyVerifier
 import no.nav.dp.vedtakslytter.avro.AvroDeserializer
 import org.apache.kafka.clients.CommonClientConfigs
@@ -11,8 +19,6 @@ import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
-import java.io.File
-import java.util.*
 
 private val localProperties = ConfigurationMap(
     mapOf(

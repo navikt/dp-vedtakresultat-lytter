@@ -1,6 +1,9 @@
 package no.nav.dp.vedtakslytter
 
 import de.huxhorn.sulky.ulid.ULID
+import io.kotest.matchers.shouldBe
+import java.time.Duration
+import java.time.ZonedDateTime
 import kotlinx.coroutines.runBlocking
 import no.nav.common.JAASCredential
 import no.nav.common.KafkaEnvironment
@@ -15,11 +18,8 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import io.kotlintest.shouldBe
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import java.time.Duration
-import java.time.ZonedDateTime
 
 class KafkaLytterTest {
     companion object {

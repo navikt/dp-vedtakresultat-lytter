@@ -1,11 +1,11 @@
 package no.nav.dp.vedtakslytter.avro
 
+import java.io.ByteArrayOutputStream
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericDatumWriter
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.EncoderFactory
 import org.apache.kafka.common.serialization.Serializer
-import java.io.ByteArrayOutputStream
 
 class AvroSerializer : Serializer<GenericRecord> {
     companion object {

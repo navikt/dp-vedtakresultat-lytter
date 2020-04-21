@@ -1,6 +1,6 @@
 package no.nav.dp.vedtakslytter
 
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class ConfigurationTest {

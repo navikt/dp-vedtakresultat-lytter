@@ -73,7 +73,7 @@ dependencies {
     // Test related dependencies
     testImplementation(kotlin("test-junit5"))
     testImplementation(Junit5.engine)
-    testImplementation(Junit5.kotlinRunner)
+    testImplementation(KoTest.runner)
     testImplementation(Ktor.library("client"))
     testImplementation(Ktor.ktorTest)
     testImplementation(KafkaEmbedded.env)
