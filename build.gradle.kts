@@ -126,11 +126,11 @@ tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "1.8" }
 
 spotless {
     kotlin {
-        ktlint("0.33.0")
+        ktlint()
     }
     kotlinGradle {
-        target("*.gradle.kts")
-        ktlint("0.33.0")
+        target("*.gradle.kts", "buildSrc/**/*.kt*")
+        ktlint()
     }
 }
 

@@ -4,9 +4,9 @@ metadata:
   name: dp-vedtakresultat-lytter
   namespace: default
   labels:
-    team: {{team}}
+    team: teamdagpenger
 spec:
-  image: {{version}}
+  image: {{ image }}
   port: 8099
   liveness:
     path: /isAlive

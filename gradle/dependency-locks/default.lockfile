@@ -10,7 +10,7 @@ com.github.kittinunf.fuel:fuel-moshi:2.2.1
 com.github.kittinunf.fuel:fuel:2.2.1
 com.github.kittinunf.result:result:2.2.0
 com.github.luben:zstd-jni:1.4.0-1
-com.github.navikt.dp-biblioteker:ktor-utils:2020.03.12-13.01.1e6c5fe0396d
+com.github.navikt.dp-biblioteker:ktor-utils:2020.04.27-16.30.8c8e3524b97d
 com.googlecode.json-simple:json-simple:1.1.1
 com.natpryce:konfig:1.6.10.0
 com.squareup.moshi:moshi-adapters:1.8.0
@@ -37,7 +37,7 @@ io.ktor:ktor-network:1.2.6
 io.ktor:ktor-server-core:1.2.6
 io.ktor:ktor-server-host-common:1.2.6
 io.ktor:ktor-server-netty:1.2.6
-io.ktor:ktor-server:1.2.5
+io.ktor:ktor-server:1.2.6
 io.ktor:ktor-utils-jvm:1.2.6
 io.micrometer:micrometer-core:1.4.0
 io.micrometer:micrometer-registry-prometheus:1.4.0

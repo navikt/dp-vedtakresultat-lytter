@@ -19,7 +19,7 @@ com.github.kittinunf.fuel:fuel:2.2.1
 com.github.kittinunf.result:result:2.2.0
 com.github.luben:zstd-jni:1.4.0-1
 com.github.mifmif:generex:1.0.2
-com.github.navikt.dp-biblioteker:ktor-utils:2020.03.12-13.01.1e6c5fe0396d
+com.github.navikt.dp-biblioteker:ktor-utils:2020.04.27-16.30.8c8e3524b97d
 com.github.spotbugs:spotbugs-annotations:3.1.9
 com.github.tomakehurst:wiremock-standalone:2.21.0
 com.github.wumpz:diffutils:2.2
@@ -82,7 +82,7 @@ io.ktor:ktor-server-jetty:1.2.6
 io.ktor:ktor-server-netty:1.2.6
 io.ktor:ktor-server-servlet:1.2.6
 io.ktor:ktor-server-test-host:1.2.6
-io.ktor:ktor-server:1.2.5
+io.ktor:ktor-server:1.2.6
 io.ktor:ktor-utils-jvm:1.2.6
 io.ktor:ktor-websockets:1.2.6
 io.micrometer:micrometer-core:1.4.0
