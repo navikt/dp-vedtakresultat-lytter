@@ -70,13 +70,10 @@ io.ktor:ktor-utils-jvm:1.2.6
 io.ktor:ktor-websockets:1.2.6
 io.micrometer:micrometer-core:1.4.0
 io.micrometer:micrometer-registry-prometheus:1.4.0
-io.mockk:mockk-agent-api:1.9.3
-io.mockk:mockk-agent-common:1.9.3
-io.mockk:mockk-agent-jvm:1.9.3
-io.mockk:mockk-common:1.9.3
-io.mockk:mockk-dsl-jvm:1.9.3
-io.mockk:mockk-dsl:1.9.3
-io.mockk:mockk:1.9.3
+io.mockk:mockk-common:1.10.0
+io.mockk:mockk-dsl-jvm:1.10.0
+io.mockk:mockk-dsl:1.10.0
+io.mockk:mockk:1.10.0
 io.netty:netty-buffer:4.1.37.Final
 io.netty:netty-codec-http2:4.1.37.Final
 io.netty:netty-codec-http:4.1.37.Final
@@ -106,8 +103,6 @@ javax.xml.bind:jaxb-api:2.3.0
 jline:jline:0.9.94
 junit:junit:4.12
 log4j:log4j:1.2.17
-net.bytebuddy:byte-buddy-agent:1.9.10
-net.bytebuddy:byte-buddy:1.9.10
 net.sf.jopt-simple:jopt-simple:5.0.4
 no.nav:kafka-embedded-env:2.2.3
 org.apache.avro:avro:1.8.2
@@ -209,7 +204,6 @@ org.junit.platform:junit-platform-engine:1.6.1
 org.junit:junit-bom:5.6.1
 org.lz4:lz4-java:1.6.0
 org.mortbay.jetty.alpn:alpn-boot:8.1.13.v20181017
-org.objenesis:objenesis:3.0.1
 org.opentest4j:opentest4j:1.2.0
 org.ow2.asm:asm-analysis:7.0
 org.ow2.asm:asm-commons:7.0
