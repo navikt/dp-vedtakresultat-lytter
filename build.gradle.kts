@@ -11,7 +11,7 @@ plugins {
 repositories {
     jcenter()
     mavenCentral()
-    maven("http://packages.confluent.io/maven/")
+    maven("https://packages.confluent.io/maven/")
     maven("https://jitpack.io")
 }
 
