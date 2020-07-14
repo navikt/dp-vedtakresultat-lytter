@@ -27,4 +27,5 @@ spec:
       memory: 128Mi
   vault:
     enabled: true
-
+  secureLogs:
+    enabled: true
