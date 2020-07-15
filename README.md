@@ -1,6 +1,6 @@
 # dp-vedtakresultat-lytter
 ---
-[![CircleCI](https://circleci.com/gh/navikt/dp-vedtakresultat-lytter/tree/master.svg?style=svg)](https://circleci.com/gh/navikt/dp-vedtakresultat-lytter/tree/master)
+![Build and deploy](https://github.com/navikt/dp-vedtakresultat-lytter/workflows/Build%20and%20deploy/badge.svg)
 ---
 
 Kafka consumer som lytter på vedtak for dagpenger fra Golden Gate.
