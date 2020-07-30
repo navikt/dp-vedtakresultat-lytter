@@ -2,8 +2,6 @@ package no.nav.dp.vedtakslytter
 
 import de.huxhorn.sulky.ulid.ULID
 import io.kotest.matchers.shouldBe
-import java.time.Duration
-import java.time.ZonedDateTime
 import kotlinx.coroutines.runBlocking
 import no.nav.common.JAASCredential
 import no.nav.common.KafkaEnvironment
@@ -20,6 +18,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import java.time.Duration
+import java.time.ZonedDateTime
 
 class KafkaLytterTest {
     companion object {
@@ -32,7 +32,8 @@ class KafkaLytterTest {
             withSchemaRegistry = false,
             withSecurity = true,
             topicInfos = listOf(
-                KafkaEnvironment.TopicInfo(config.kafka.topic), KafkaEnvironment.TopicInfo(config.kafka.subsumsjonBruktTopic))
+                KafkaEnvironment.TopicInfo(config.kafka.topic), KafkaEnvironment.TopicInfo(config.kafka.subsumsjonBruktTopic)
+            )
         )
 
         @BeforeAll
@@ -67,10 +68,12 @@ class KafkaLytterTest {
             create(config = testConfig)
             run()
         }
-        KafkaProducer<String, GenericRecord>(testConfig.kafka.toProducerProps().apply {
-            put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroSerializer::class.java)
-            put(ProducerConfig.ACKS_CONFIG, "all")
-        }).use { producer ->
+        KafkaProducer<String, GenericRecord>(
+            testConfig.kafka.toProducerProps().apply {
+                put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroSerializer::class.java)
+                put(ProducerConfig.ACKS_CONFIG, "all")
+            }
+        ).use { producer ->
             producer.send(
                 ProducerRecord(
                     testConfig.kafka.topic,
@@ -80,9 +83,11 @@ class KafkaLytterTest {
             ).get()
         }
         var messagesRead = 0
-        KafkaConsumer<String, String>(testConfig.kafka.toConsumerProps().apply {
-            put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)
-        }).use { consumer ->
+        KafkaConsumer<String, String>(
+            testConfig.kafka.toConsumerProps().apply {
+                put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)
+            }
+        ).use { consumer ->
             consumer.subscribe(listOf(testConfig.kafka.subsumsjonBruktTopic))
             while (messagesRead == 0) {
                 val records = consumer.poll(Duration.ofSeconds(2))
