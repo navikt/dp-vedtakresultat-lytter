@@ -71,11 +71,11 @@ org.apache.yetus:audience-annotations:0.5.0
 org.apache.zookeeper:zookeeper:3.4.14
 org.eclipse.jetty.alpn:alpn-api:1.1.3.v20160715
 org.hdrhistogram:HdrHistogram:2.1.12
-org.jetbrains.kotlin:kotlin-reflect:1.3.71
-org.jetbrains.kotlin:kotlin-stdlib-common:1.3.71
-org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.71
-org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.71
-org.jetbrains.kotlin:kotlin-stdlib:1.3.71
+org.jetbrains.kotlin:kotlin-reflect:1.3.72
+org.jetbrains.kotlin:kotlin-stdlib-common:1.3.72
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72
+org.jetbrains.kotlin:kotlin-stdlib:1.3.72
 org.jetbrains.kotlinx:atomicfu:0.14.2
 org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.4
 org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.4
