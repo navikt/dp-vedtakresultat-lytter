@@ -19,7 +19,7 @@ com.github.kittinunf.fuel:fuel:2.2.1
 com.github.kittinunf.result:result:2.2.0
 com.github.luben:zstd-jni:1.4.0-1
 com.github.mifmif:generex:1.0.2
-com.github.navikt.dp-biblioteker:ktor-utils:2020.07.03-13.36.4ef81d2d51f6
+com.github.navikt.dp-biblioteker:ktor-utils:2020.07.30-12.21.8857eb1469bf
 com.github.spotbugs:spotbugs-annotations:3.1.9
 com.github.tomakehurst:wiremock-standalone:2.21.0
 com.github.wumpz:diffutils:2.2
