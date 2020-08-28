@@ -32,7 +32,8 @@ class KafkaLytterTest {
             withSchemaRegistry = false,
             withSecurity = true,
             topicInfos = listOf(
-                KafkaEnvironment.TopicInfo(config.kafka.topic), KafkaEnvironment.TopicInfo(config.kafka.subsumsjonBruktTopic)
+                KafkaEnvironment.TopicInfo(config.kafka.topic),
+                KafkaEnvironment.TopicInfo(config.kafka.subsumsjonBruktTopic)
             )
         )
 
