@@ -202,6 +202,7 @@ data class Vedtak(
             .set("MINSTEINNTEKT_SUBSUMSJONSID", minsteInntektSubsumsjonsId)
             .set("PERIODE_SUBSUMSJONSID", periodeSubsumsjonsId)
             .set("GRUNNLAG_SUBSUMSJONSID", grunnlagSubsumsjonsId)
+            .set("SATS_SUBSUMSJONSID", satsSubsumsjonsId)
             .set("REG_USER", regUser)
             .set("REG_DATO", regDato)
             .set("MOD_USER", modUser)
@@ -228,7 +229,8 @@ data class Vedtak(
                 utfallKode = record.get("UTFALLKODE")?.toString(),
                 minsteInntektSubsumsjonsId = record.get("MINSTEINNTEKT_SUBSUMSJONSID")?.toString(),
                 periodeSubsumsjonsId = record.get("PERIODE_SUBSUMSJONSID")?.toString(),
-                satsSubsumsjonsId = record.get("GRUNNLAG_SUBSUMSJONSID")?.toString(),
+                satsSubsumsjonsId = record.get("SATS_SUBSUMSJONSID")?.toString(),
+                grunnlagSubsumsjonsId = record.get("GRUNNLAG_SUBSUMSJONSID")?.toString(),
                 regUser = record.get("REG_USER")?.toString(),
                 regDato = record.get("REG_DATO")?.toString(),
                 modUser = record.get("MOD_USER")?.toString(),

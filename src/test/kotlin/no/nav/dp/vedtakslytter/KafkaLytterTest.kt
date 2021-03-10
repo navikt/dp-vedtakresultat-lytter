@@ -56,7 +56,7 @@ class KafkaLytterTest {
     }
 
     @Test
-    fun `minsteinntekts subsumsjon blir sagt fra om`() = runBlocking {
+    fun `Subsumsjoner blir sagt fra om`() = runBlocking {
 
         val testConfig = config.copy(
             kafka = config.kafka.copy(
@@ -82,6 +82,13 @@ class KafkaLytterTest {
                     nyRettighetMedMinsteInntektSubsumsjon.toGenericRecord()
                 )
             ).get()
+            producer.send(
+                ProducerRecord(
+                    testConfig.kafka.topic,
+                    grunnlagOgPeriodeSubsumsjon.vedtakId.toString(),
+                    grunnlagOgPeriodeSubsumsjon.toGenericRecord()
+                )
+            ).get()
         }
         var messagesRead = 0
         KafkaConsumer<String, String>(
@@ -90,15 +97,13 @@ class KafkaLytterTest {
             }
         ).use { consumer ->
             consumer.subscribe(listOf(testConfig.kafka.subsumsjonBruktTopic))
-            while (messagesRead == 0) {
+            while (messagesRead != 4) {
                 val records = consumer.poll(Duration.ofSeconds(2))
                 messagesRead += records.count()
-                records.asSequence().map { r -> subsumsjonAdapter.fromJson(r.value()) }.forEach { sub ->
-                    assertEquals("1337", sub?.eksternId)
-                }
             }
         }
         assertTrue(messagesRead > 0)
+        assertEquals(4, messagesRead)
     }
 
     @Test
@@ -107,6 +112,7 @@ class KafkaLytterTest {
         145.0.roundedString() shouldBe "145"
         145.55555.roundedString() shouldBe "145.55555"
     }
+
     val ulid = ULID()
     val nyRettighetMedMinsteInntektSubsumsjon = Vedtak(
         vedtakId = 1337.0,
@@ -118,6 +124,14 @@ class KafkaLytterTest {
         primaryKeys = listOf("VEDTAKID"),
         vedtakTypeKode = "O",
         vedtakStatusKode = "IVERK",
-        minsteInntektSubsumsjonsId = ulid.nextULID()
+        minsteInntektSubsumsjonsId = ulid.nextULID(),
+        periodeSubsumsjonsId = ulid.nextULID()
+    )
+
+    val grunnlagOgPeriodeSubsumsjon = nyRettighetMedMinsteInntektSubsumsjon.copy(
+        minsteInntektSubsumsjonsId = null,
+        periodeSubsumsjonsId = null,
+        satsSubsumsjonsId = ulid.nextULID(),
+        grunnlagSubsumsjonsId = ulid.nextULID()
     )
 }
