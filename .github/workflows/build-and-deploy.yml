@@ -62,6 +62,7 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: nais/nais.yaml
+          VAR: KAFKA_POOL=nav-dev
           PRINT_PAYLOAD: true
 
   deploy-prod:
@@ -81,4 +82,5 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
           RESOURCE: nais/nais.yaml
+          VAR: KAFKA_POOL=nav-prod
           PRINT_PAYLOAD: true

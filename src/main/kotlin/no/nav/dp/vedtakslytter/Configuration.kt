@@ -15,6 +15,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
+import org.apache.kafka.common.security.auth.SecurityProtocol
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import java.io.File
@@ -30,7 +31,7 @@ private val localProperties = ConfigurationMap(
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
         "kafka.groupId" to "srvdp-vedtakresultat-lytter",
-        "kafka.subsumsjon.topic" to "privat-dagpenger-subsumsjon-brukt",
+        "kafka.subsumsjon.topic" to "teamdagpenger.subsumsjonbrukt.v1",
         "regel.api.url" to "http://dp-regel-api.nais.preprod.local",
         "oidc.sts.issuerurl" to "http://localhost",
         "srvdp.vedtakresultat.lytter.username" to "srvdp-vedtakresultat",
@@ -50,7 +51,7 @@ private val devProperties = ConfigurationMap(
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
         "kafka.groupId" to "vedtakresultat-lytter",
-        "kafka.subsumsjon.topic" to "privat-dagpenger-subsumsjon-brukt",
+        "kafka.subsumsjon.topic" to "teamdagpenger.subsumsjonbrukt.v1",
         "regel.api.url" to "http://dp-regel-api.default",
         "oidc.sts.issuerurl" to "http://localhost",
         "srvdp.vedtakresultat.lytter.username" to "srvdp-vedtakresultat",
@@ -71,7 +72,7 @@ private val prodProperties = ConfigurationMap(
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
         "kafka.groupId" to "srvdp-vedtakresultat-lytter",
-        "kafka.subsumsjon.topic" to "privat-dagpenger-subsumsjon-brukt",
+        "kafka.subsumsjon.topic" to "teamdagpenger.subsumsjonbrukt.v1",
         "regel.api.url" to "http://dp-regel-api.default",
         "srvdp.vedtakresultat.lytter.username" to "srvdp-vedtakresultat",
         "srvdp.vedtakresultat.lytter.password" to "srvdp-passord",
@@ -118,6 +119,28 @@ data class Kafka(
             put(ProducerConfig.ACKS_CONFIG, "1")
             put(ProducerConfig.CLIENT_ID_CONFIG, "dp-vedtakresultat-lytter")
             putAll(credentials())
+        }
+    }
+
+    fun toAivenProducerProps(): Properties {
+        val env: Map<String, String> = config().list().reversed().fold(emptyMap()) { map, pair -> map + pair.second }
+        return Properties().apply {
+            put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, env.getValue("KAFKA_BROKERS"))
+            put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name)
+            put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "")
+            put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, "jks")
+            put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "PKCS12")
+            put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.getValue("KAFKA_TRUSTSTORE_PATH"))
+            put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.getValue("KAFKA_CREDSTORE_PASSWORD"))
+            put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, env.getValue("KAFKA_KEYSTORE_PATH"))
+            put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, env.getValue("KAFKA_CREDSTORE_PASSWORD"))
+
+            put(ProducerConfig.ACKS_CONFIG, "1")
+            put(ProducerConfig.LINGER_MS_CONFIG, "0")
+            put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "1")
+            put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
+            put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
+            put(ProducerConfig.CLIENT_ID_CONFIG, "dp-vedtakresultat-lytter")
         }
     }
 
