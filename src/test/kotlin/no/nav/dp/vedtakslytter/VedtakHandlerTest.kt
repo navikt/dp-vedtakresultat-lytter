@@ -1,23 +1,47 @@
 package no.nav.dp.vedtakslytter
 
 import de.huxhorn.sulky.ulid.ULID
+import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.shouldBe
+import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.clients.producer.RecordMetadata
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
+import java.util.concurrent.Future
 
 class VedtakHandlerTest {
     @Test
-    fun `Orienterer om brukte subsumsjoner`() {
-        val mock = mockk<KafkaProducer<String, String>>(relaxed = true)
+    fun `Orienterer om brukte minsteinntekt og periodesubsumsjoner`() {
+        val slots = mutableListOf<ProducerRecord<String, String>>()
+        val mock = mockk<KafkaProducer<String, String>>().also { every { it.send(
+            capture(slots), any()
+        ) } returns mockk<Future<RecordMetadata>>() }
         val vedtakHandler = VedtakHandler(mock, "topic")
-        vedtakHandler.handleVedtak(nyRettighetMedMinsteInntektSubsumsjon)
+        vedtakHandler.handleVedtak(nyRettighetMedMinsteInntektOgPeriodeSubsumsjon)
+        vedtakHandler.handleVedtak(grunnlagOgSatsSubsumsjon)
 
-        verify(exactly = 2) { mock.send(any(), any()) }
+        slots.size shouldBe 4
+        val resultater = slots.map {
+            subsumsjonAdapter.fromJson(it.value())!!
+        }
+
+        resultater.shouldHaveSingleElement {
+                s -> s.id == nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.minsteInntektSubsumsjonsId
+        }
+        resultater.shouldHaveSingleElement {
+                s -> s.id == nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.periodeSubsumsjonsId
+        }
+        resultater.shouldHaveSingleElement {
+                s -> s.id == grunnlagOgSatsSubsumsjon.grunnlagSubsumsjonsId
+        }
+        resultater.shouldHaveSingleElement {
+                s -> s.id == grunnlagOgSatsSubsumsjon.satsSubsumsjonsId
+        }
     }
+
 
     @Test
     fun `Formats double ids correctly`() {
@@ -27,7 +51,7 @@ class VedtakHandlerTest {
     }
 
     val ulid = ULID()
-    val nyRettighetMedMinsteInntektSubsumsjon = Vedtak(
+    val nyRettighetMedMinsteInntektOgPeriodeSubsumsjon = Vedtak(
         vedtakId = 1337.0,
         table = "",
         opType = "I",
@@ -41,7 +65,7 @@ class VedtakHandlerTest {
         periodeSubsumsjonsId = ulid.nextULID()
     )
 
-    val grunnlagOgPeriodeSubsumsjon = nyRettighetMedMinsteInntektSubsumsjon.copy(
+    val grunnlagOgSatsSubsumsjon = nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.copy(
         minsteInntektSubsumsjonsId = null,
         periodeSubsumsjonsId = null,
         satsSubsumsjonsId = ulid.nextULID(),
