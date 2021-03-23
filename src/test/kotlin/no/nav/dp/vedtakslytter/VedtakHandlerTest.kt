@@ -16,9 +16,14 @@ class VedtakHandlerTest {
     @Test
     fun `Orienterer om brukte minsteinntekt og periodesubsumsjoner`() {
         val slots = mutableListOf<ProducerRecord<String, String>>()
-        val mock = mockk<KafkaProducer<String, String>>().also { every { it.send(
-            capture(slots), any()
-        ) } returns mockk<Future<RecordMetadata>>() }
+        val mock = mockk<KafkaProducer<String, String>>().also {
+            every {
+                it.send(
+                    capture(slots),
+                    any()
+                )
+            } returns mockk<Future<RecordMetadata>>()
+        }
         val vedtakHandler = VedtakHandler(mock, "topic")
         vedtakHandler.handleVedtak(nyRettighetMedMinsteInntektOgPeriodeSubsumsjon)
         vedtakHandler.handleVedtak(grunnlagOgSatsSubsumsjon)
@@ -29,19 +34,22 @@ class VedtakHandlerTest {
         }
 
         resultater.shouldHaveSingleElement {
-                s -> s.id == nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.minsteInntektSubsumsjonsId
+            s ->
+            s.id == nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.minsteInntektSubsumsjonsId
         }
         resultater.shouldHaveSingleElement {
-                s -> s.id == nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.periodeSubsumsjonsId
+            s ->
+            s.id == nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.periodeSubsumsjonsId
         }
         resultater.shouldHaveSingleElement {
-                s -> s.id == grunnlagOgSatsSubsumsjon.grunnlagSubsumsjonsId
+            s ->
+            s.id == grunnlagOgSatsSubsumsjon.grunnlagSubsumsjonsId
         }
         resultater.shouldHaveSingleElement {
-                s -> s.id == grunnlagOgSatsSubsumsjon.satsSubsumsjonsId
+            s ->
+            s.id == grunnlagOgSatsSubsumsjon.satsSubsumsjonsId
         }
     }
-
 
     @Test
     fun `Formats double ids correctly`() {

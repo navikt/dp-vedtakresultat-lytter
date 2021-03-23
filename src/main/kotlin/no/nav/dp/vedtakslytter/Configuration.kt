@@ -30,7 +30,7 @@ private val localProperties = ConfigurationMap(
         "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
-        "kafka.groupId" to "srvdp-vedtakresultat-lytter",
+        "kafka.groupId" to "srvdp-vedtakresultat-lytter-v1",
         "kafka.subsumsjon.topic" to "teamdagpenger.subsumsjonbrukt.v1",
         "regel.api.url" to "http://dp-regel-api.nais.preprod.local",
         "oidc.sts.issuerurl" to "http://localhost",
@@ -50,13 +50,12 @@ private val devProperties = ConfigurationMap(
         "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
-        "kafka.groupId" to "vedtakresultat-lytter",
         "kafka.subsumsjon.topic" to "teamdagpenger.subsumsjonbrukt.v1",
         "regel.api.url" to "http://dp-regel-api.default",
         "oidc.sts.issuerurl" to "http://localhost",
         "srvdp.vedtakresultat.lytter.username" to "srvdp-vedtakresultat",
         "srvdp.vedtakresultat.lytter.password" to "srvdp-passord",
-        "kafka.groupId" to "srvdp-vedtakresultat-lytter",
+        "kafka.groupId" to "srvdp-vedtakresultat-lytter-v1",
         "auth.regelapi.secret" to "secret",
         "auth.regelapi.key" to "key"
     )
@@ -71,7 +70,7 @@ private val prodProperties = ConfigurationMap(
         "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
-        "kafka.groupId" to "srvdp-vedtakresultat-lytter",
+        "kafka.groupId" to "srvdp-vedtakresultat-lytter-v1",
         "kafka.subsumsjon.topic" to "teamdagpenger.subsumsjonbrukt.v1",
         "regel.api.url" to "http://dp-regel-api.default",
         "srvdp.vedtakresultat.lytter.username" to "srvdp-vedtakresultat",
@@ -107,17 +106,6 @@ data class Kafka(
             put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroDeserializer::class.java)
             put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
             put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true)
-            putAll(credentials())
-        }
-    }
-
-    fun toProducerProps(): Properties {
-        return Properties().apply {
-            put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer)
-            put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
-            put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
-            put(ProducerConfig.ACKS_CONFIG, "1")
-            put(ProducerConfig.CLIENT_ID_CONFIG, "dp-vedtakresultat-lytter")
             putAll(credentials())
         }
     }
