@@ -35,8 +35,8 @@ object KafkaLytter : CoroutineScope {
         Counter.build().name("subsumsjon_brukt_error").help("Feil i sending av transformert melding").register()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
-    val kafkaProducer = KafkaProducer<String, String>(config.kafka.toAivenProducerProps())
-    val vedtakHandler = VedtakHandler(kafkaProducer, config.kafka.subsumsjonBruktTopic)
+    val kafkaProducer by lazy { KafkaProducer<String, String>(config.kafka.toAivenProducerProps()) }
+    val vedtakHandler by lazy { VedtakHandler(kafkaProducer, config.kafka.subsumsjonBruktTopic) }
 
     init {
         Runtime.getRuntime().addShutdownHook(Thread(::cancel))
