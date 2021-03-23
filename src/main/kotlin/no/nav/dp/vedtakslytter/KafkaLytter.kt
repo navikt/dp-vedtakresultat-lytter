@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import no.nav.dp.vedtakslytter.KafkaLytter.kafkaProducer
 import no.nav.dp.vedtakslytter.avro.AvroDeserializer
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.generic.GenericRecordBuilder
@@ -34,8 +35,15 @@ object KafkaLytter : CoroutineScope {
         Counter.build().name("subsumsjon_brukt_error").help("Feil i sending av transformert melding").register()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
+    val kafkaProducer = KafkaProducer<String, String>(config.kafka.toAivenProducerProps())
+    val vedtakHandler = VedtakHandler(kafkaProducer, config.kafka.subsumsjonBruktTopic)
+
+    init {
+        Runtime.getRuntime().addShutdownHook(Thread(::cancel))
+    }
 
     fun cancel() {
+        kafkaProducer.close()
         job.cancel()
     }
 
@@ -61,7 +69,7 @@ object KafkaLytter : CoroutineScope {
                             it.key() to Vedtak.fromGenericRecord(it.value())
                         }.onEach { logger.info { it } }
                             .onEach { MESSAGES_RECEIVED.inc() }
-                            .forEach { (_, v) -> handleVedtak(v) }
+                            .forEach { (_, v) -> vedtakHandler.handleVedtak(v) }
                     } catch (e: RetriableException) {
                         logger.warn("Had a retriable exception, retrying", e)
                     }
@@ -69,6 +77,8 @@ object KafkaLytter : CoroutineScope {
             }
         }
     }
+}
+class VedtakHandler(private val kafkaProducer: KafkaProducer<String, String>, private val topic: String) {
 
     fun handleVedtak(vedtak: Vedtak) {
         vedtak.minsteInntektSubsumsjonsId?.let {
@@ -122,30 +132,30 @@ object KafkaLytter : CoroutineScope {
     }
 
     private fun orienterOmSubsumsjon(subsumsjonBrukt: SubsumsjonBrukt, subsumsjonType: SubsumsjonType) {
-        KafkaProducer<String, String>(config.kafka.toProducerProps()).use { p ->
-            p.send(
-                ProducerRecord(
-                    config.kafka.subsumsjonBruktTopic,
-                    subsumsjonBrukt.id,
-                    subsumsjonAdapter.toJson(subsumsjonBrukt)
-                )
-            ) { d, e ->
-                if (d != null) {
-                    val utfall = subsumsjonBrukt.utfall ?: "ukjent"
-                    val vedtakstatus = subsumsjonBrukt.vedtakStatus ?: "ukjent"
-                    MESSAGES_SENT.labels(subsumsjonType.toString().toLowerCase(), utfall, vedtakstatus).inc()
-                    logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${d.offset()}" }
-                } else if (e != null) {
-                    FAILED_KAFKA_OPS.inc()
-                    logger.error("Kunne ikke sende bekreftelse på subsumsjon", e)
-                }
+        kafkaProducer.send(
+            ProducerRecord(
+                topic,
+                subsumsjonBrukt.id,
+                subsumsjonAdapter.toJson(subsumsjonBrukt)
+            )
+        ) { d, e ->
+            if (d != null) {
+                val utfall = subsumsjonBrukt.utfall ?: "ukjent"
+                val vedtakstatus = subsumsjonBrukt.vedtakStatus ?: "ukjent"
+                KafkaLytter.MESSAGES_SENT.labels(subsumsjonType.toString().toLowerCase(), utfall, vedtakstatus).inc()
+                KafkaLytter.logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${d.offset()}" }
+            } else if (e != null) {
+                KafkaLytter.FAILED_KAFKA_OPS.inc()
+                KafkaLytter.logger.error("Kunne ikke sende bekreftelse på subsumsjon", e)
             }
         }
     }
 }
+
 enum class SubsumsjonType {
     SATS, GRUNNLAG, PERIODE, MINSTEINNTEKT
 }
+
 val subsumsjonAdapter: JsonAdapter<SubsumsjonBrukt> = moshiInstance.adapter(SubsumsjonBrukt::class.java)
 
 fun Double.roundedString(): String {

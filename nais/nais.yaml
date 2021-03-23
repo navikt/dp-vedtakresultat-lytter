@@ -25,6 +25,8 @@ spec:
     requests:
       cpu: 100m
       memory: 128Mi
+  kafka:
+    pool: {{ KAFKA_POOL }}
   vault:
     enabled: true
   secureLogs:
