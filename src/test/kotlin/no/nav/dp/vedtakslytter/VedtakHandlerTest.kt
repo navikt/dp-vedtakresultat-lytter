@@ -3,33 +3,21 @@ package no.nav.dp.vedtakslytter
 import de.huxhorn.sulky.ulid.ULID
 import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockk
-import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.clients.producer.RecordMetadata
+import org.apache.kafka.clients.producer.MockProducer
+import org.apache.kafka.common.serialization.StringSerializer
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
-import java.util.concurrent.Future
 
 class VedtakHandlerTest {
     @Test
     fun `Orienterer om brukte minsteinntekt og periodesubsumsjoner`() {
-        val slots = mutableListOf<ProducerRecord<String, String>>()
-        val mock = mockk<KafkaProducer<String, String>>().also {
-            every {
-                it.send(
-                    capture(slots),
-                    any()
-                )
-            } returns mockk<Future<RecordMetadata>>()
-        }
-        val vedtakHandler = VedtakHandler(mock, "topic")
+        val mockProducer = MockProducer(true, StringSerializer(), StringSerializer())
+        val vedtakHandler = VedtakHandler(mockProducer, "topic")
         vedtakHandler.handleVedtak(nyRettighetMedMinsteInntektOgPeriodeSubsumsjon)
         vedtakHandler.handleVedtak(grunnlagOgSatsSubsumsjon)
 
-        slots.size shouldBe 4
-        val resultater = slots.map {
+        mockProducer.history().size shouldBe 4
+        val resultater = mockProducer.history().map {
             subsumsjonAdapter.fromJson(it.value())!!
         }
 

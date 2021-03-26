@@ -7,12 +7,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import no.nav.dp.vedtakslytter.KafkaLytter.kafkaProducer
 import no.nav.dp.vedtakslytter.avro.AvroDeserializer
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.generic.GenericRecordBuilder
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.errors.RetriableException
 import java.time.Duration
@@ -22,7 +22,10 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
+
+val aivenTopic = "teamdagpenger.subsumsjonbrukt.v1"
 
 object KafkaLytter : CoroutineScope {
     val logger = KotlinLogging.logger {}
@@ -36,7 +39,7 @@ object KafkaLytter : CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
     val kafkaProducer by lazy { KafkaProducer<String, String>(config.kafka.toAivenProducerProps()) }
-    val vedtakHandler by lazy { VedtakHandler(kafkaProducer, config.kafka.subsumsjonBruktTopic) }
+    val vedtakHandler by lazy { VedtakHandler(kafkaProducer, aivenTopic) }
 
     init {
         Runtime.getRuntime().addShutdownHook(Thread(::cancel))
@@ -49,7 +52,16 @@ object KafkaLytter : CoroutineScope {
 
     fun isRunning(): Boolean {
         logger.trace { "Asked if running" }
-        return job.isActive
+        return job.isActive && producerIsAlive()
+    }
+
+    private fun producerIsAlive(): Boolean {
+        return try {
+            kafkaProducer.partitionsFor(aivenTopic)
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 
     fun create(config: Configuration) {
@@ -70,6 +82,8 @@ object KafkaLytter : CoroutineScope {
                         }.onEach { logger.info { it } }
                             .onEach { MESSAGES_RECEIVED.inc() }
                             .forEach { (_, v) -> vedtakHandler.handleVedtak(v) }
+
+                        consumer.commitSync()
                     } catch (e: RetriableException) {
                         logger.warn("Had a retriable exception, retrying", e)
                     }
@@ -78,7 +92,7 @@ object KafkaLytter : CoroutineScope {
         }
     }
 }
-class VedtakHandler(private val kafkaProducer: KafkaProducer<String, String>, private val topic: String) {
+class VedtakHandler(private val kafkaProducer: Producer<String, String>, private val topic: String) {
 
     fun handleVedtak(vedtak: Vedtak) {
         vedtak.minsteInntektSubsumsjonsId?.let {
@@ -132,22 +146,23 @@ class VedtakHandler(private val kafkaProducer: KafkaProducer<String, String>, pr
     }
 
     private fun orienterOmSubsumsjon(subsumsjonBrukt: SubsumsjonBrukt, subsumsjonType: SubsumsjonType) {
-        kafkaProducer.send(
-            ProducerRecord(
-                topic,
-                subsumsjonBrukt.id,
-                subsumsjonAdapter.toJson(subsumsjonBrukt)
-            )
-        ) { d, e ->
-            if (d != null) {
-                val utfall = subsumsjonBrukt.utfall ?: "ukjent"
-                val vedtakstatus = subsumsjonBrukt.vedtakStatus ?: "ukjent"
-                KafkaLytter.MESSAGES_SENT.labels(subsumsjonType.toString().toLowerCase(), utfall, vedtakstatus).inc()
-                KafkaLytter.logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${d.offset()}" }
-            } else if (e != null) {
-                KafkaLytter.FAILED_KAFKA_OPS.inc()
-                KafkaLytter.logger.error("Kunne ikke sende bekreftelse på subsumsjon", e)
-            }
+        try {
+            val metadata = kafkaProducer.send(
+                ProducerRecord(
+                    topic,
+                    subsumsjonBrukt.id,
+                    subsumsjonAdapter.toJson(subsumsjonBrukt)
+                )
+            ).get(500, TimeUnit.MILLISECONDS)
+
+            val utfall = subsumsjonBrukt.utfall ?: "ukjent"
+            val vedtakstatus = subsumsjonBrukt.vedtakStatus ?: "ukjent"
+            KafkaLytter.MESSAGES_SENT.labels(subsumsjonType.toString().toLowerCase(), utfall, vedtakstatus).inc()
+            KafkaLytter.logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${metadata.offset()}" }
+        } catch (e: Exception) {
+            KafkaLytter.FAILED_KAFKA_OPS.inc()
+            KafkaLytter.logger.error("Kunne ikke sende bekreftelse på subsumsjon", e)
+            throw e
         }
     }
 }

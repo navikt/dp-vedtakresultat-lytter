@@ -31,7 +31,6 @@ private val localProperties = ConfigurationMap(
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
         "kafka.groupId" to "srvdp-vedtakresultat-lytter-v1",
-        "kafka.subsumsjon.topic" to "teamdagpenger.subsumsjonbrukt.v1",
         "regel.api.url" to "http://dp-regel-api.nais.preprod.local",
         "oidc.sts.issuerurl" to "http://localhost",
         "srvdp.vedtakresultat.lytter.username" to "srvdp-vedtakresultat",
@@ -50,7 +49,6 @@ private val devProperties = ConfigurationMap(
         "kafka.topic" to "privat-arena-dagpengevedtak-ferdigstilt",
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
-        "kafka.subsumsjon.topic" to "teamdagpenger.subsumsjonbrukt.v1",
         "regel.api.url" to "http://dp-regel-api.default",
         "oidc.sts.issuerurl" to "http://localhost",
         "srvdp.vedtakresultat.lytter.username" to "srvdp-vedtakresultat",
@@ -71,7 +69,6 @@ private val prodProperties = ConfigurationMap(
         "username" to "srvdp-vedtakresultat",
         "password" to "ikkenoe",
         "kafka.groupId" to "srvdp-vedtakresultat-lytter-v1",
-        "kafka.subsumsjon.topic" to "teamdagpenger.subsumsjonbrukt.v1",
         "regel.api.url" to "http://dp-regel-api.default",
         "srvdp.vedtakresultat.lytter.username" to "srvdp-vedtakresultat",
         "srvdp.vedtakresultat.lytter.password" to "srvdp-passord",
@@ -93,8 +90,7 @@ data class Kafka(
     val topic: String = config()[Key("kafka.topic", stringType)],
     val username: String = config()[Key("username", stringType)],
     val password: String = config()[Key("password", stringType)],
-    val groupId: String = config()[Key("kafka.groupId", stringType)],
-    val subsumsjonBruktTopic: String = config()[Key("kafka.subsumsjon.topic", stringType)]
+    val groupId: String = config()[Key("kafka.groupId", stringType)]
 ) {
 
     fun toConsumerProps(): Properties {
@@ -105,7 +101,7 @@ data class Kafka(
             put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)
             put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroDeserializer::class.java)
             put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-            put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true)
+            put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false)
             putAll(credentials())
         }
     }
