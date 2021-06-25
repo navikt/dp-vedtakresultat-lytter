@@ -75,7 +75,10 @@ dependencies {
     testImplementation(Junit5.engine)
     testImplementation(KoTest.runner)
     testImplementation(Ktor.library("client"))
-    testImplementation(Ktor.ktorTest)
+    testImplementation(Ktor.ktorTest) {
+        // https://youtrack.jetbrains.com/issue/KT-46090
+        exclude("org.jetbrains.kotlin", "kotlin-test-junit")
+    }
     testImplementation(KafkaEmbedded.env)
     testImplementation(Mockk.mockk)
     testImplementation(Wiremock.standalone)
@@ -84,21 +87,6 @@ dependencies {
 configurations {
     this.all {
         exclude(group = "ch.qos.logback")
-    }
-}
-
-dependencyLocking {
-    lockAllConfigurations()
-}
-
-tasks.register("resolveAndLockDependencies") {
-    doFirst {
-        require(gradle.startParameter.isWriteDependencyLocks)
-    }
-    doLast {
-        configurations.filter {
-            it.isCanBeResolved
-        }.forEach { it.resolve() }
     }
 }
 
@@ -135,10 +123,6 @@ spotless {
 }
 
 tasks.named("shadowJar") {
-    dependsOn("test")
-}
-
-tasks.named("jar") {
     dependsOn("test")
 }
 

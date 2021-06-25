@@ -157,7 +157,7 @@ class VedtakHandler(private val kafkaProducer: Producer<String, String>, private
 
             val utfall = subsumsjonBrukt.utfall ?: "ukjent"
             val vedtakstatus = subsumsjonBrukt.vedtakStatus ?: "ukjent"
-            KafkaLytter.MESSAGES_SENT.labels(subsumsjonType.toString().toLowerCase(), utfall, vedtakstatus).inc()
+            KafkaLytter.MESSAGES_SENT.labels(subsumsjonType.toString().lowercase(), utfall, vedtakstatus).inc()
             KafkaLytter.logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${metadata.offset()}" }
         } catch (e: Exception) {
             KafkaLytter.FAILED_KAFKA_OPS.inc()
