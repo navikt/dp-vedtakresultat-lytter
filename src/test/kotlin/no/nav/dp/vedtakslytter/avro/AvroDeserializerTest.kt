@@ -37,7 +37,7 @@ class AvroDeserializerTest {
         val writer = GenericDatumWriter<GenericRecord>(AvroDeserializer.schema)
         writer.write(vedtakAsGenericRecord, encoder)
         encoder.flush()
-        val record = deser.deserialize("some_topic", out.toByteArray())!!
+        val record = deser.deserialize("some_topic", out.toByteArray())
         val deserialized = Vedtak.fromGenericRecord(record)
         assertEquals(vedtak.toString(), deserialized.toString())
     }
