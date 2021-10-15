@@ -77,7 +77,7 @@ object KafkaLytter : CoroutineScope {
                 while (job.isActive) {
                     try {
                         val records = consumer.poll(Duration.of(100, ChronoUnit.MILLIS))
-                        records.asSequence().map {
+                        records.asSequence().mapNotNull {
                             it.key() to Vedtak.fromGenericRecord(it.value())
                         }.onEach { logger.info { it } }
                             .onEach { MESSAGES_RECEIVED.inc() }

@@ -1,5 +1,7 @@
 package no.nav.dp.vedtakslytter.avro
 
+import no.nav.dp.vedtakslytter.logger
+import org.apache.avro.AvroRuntimeException
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericRecord
@@ -14,9 +16,15 @@ class AvroDeserializer : Deserializer<GenericRecord> {
     override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-    override fun deserialize(topic: String, data: ByteArray): GenericRecord {
-        val reader = GenericDatumReader<GenericRecord>(schema)
-        return reader.read(null, DecoderFactory.get().binaryDecoder(data, null))
+    override fun deserialize(topic: String, data: ByteArray): GenericRecord? {
+        return try {
+            val reader = GenericDatumReader<GenericRecord>(schema)
+            reader.read(null, DecoderFactory.get().binaryDecoder(data, null))
+        } catch (e: AvroRuntimeException) {
+            val corruptedData = String(data, Charsets.UTF_8)
+            logger.error("Poison pill! \n$corruptedData", e)
+            null
+        }
     }
 
     override fun close() {
