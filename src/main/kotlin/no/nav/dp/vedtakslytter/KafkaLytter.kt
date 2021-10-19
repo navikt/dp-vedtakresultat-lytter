@@ -21,6 +21,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
@@ -263,7 +264,7 @@ data class Vedtak(
                 table = record.get("table").toString(),
                 opType = record.get("op_type").toString(),
                 opTs = LocalDateTime.parse(record.get("op_ts").toString(), arenaOpTsFormat).atZone(oslo),
-                currentTs = LocalDateTime.parse(record.get("current_ts").toString(), arenaCurrentTsFormat).atZone(oslo),
+                currentTs = readCurrentTs(record),
                 pos = record.get("pos").toString(),
                 vedtakId = record.get("VEDTAK_ID") as Double,
                 vedtakTypeKode = record.get("VEDTAKTYPEKODE")?.toString(),
@@ -278,6 +279,14 @@ data class Vedtak(
                 modUser = record.get("MOD_USER")?.toString(),
                 modDato = record.get("MOD_DATO")?.toString()
             )
+        }
+
+        private fun readCurrentTs(record: GenericRecord): ZonedDateTime = with(record.get("current_ts").toString()) {
+            try {
+                LocalDateTime.parse(this, arenaCurrentTsFormat).atZone(oslo)
+            } catch (e: DateTimeParseException) {
+                LocalDateTime.parse(this, arenaOpTsFormat).atZone(oslo)
+            }
         }
     }
 

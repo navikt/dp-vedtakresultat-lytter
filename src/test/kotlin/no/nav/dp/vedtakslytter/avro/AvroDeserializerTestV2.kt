@@ -52,14 +52,13 @@ class AvroDeserializerTestV2 {
 
     private val ulid = ULID()
     private val arenaOpTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSSSSS]")
-    private val arenaCurrentTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
-    fun lagArenaHendelse(): GenericData.Record {
 
+    fun lagArenaHendelse(): GenericData.Record {
         return GenericData.Record(AvroDeserializer.dagpengeVedtakSchemaV2).apply {
             put("table", "table")
             put("op_type", "I")
             put("op_ts", ZonedDateTime.now().format(arenaOpTsFormat))
-            put("current_ts", ZonedDateTime.now().format(arenaCurrentTsFormat))
+            put("current_ts", ZonedDateTime.now().format(arenaOpTsFormat))
             put("pos", "1")
             put("VEDTAK_ID", 36737638.toDouble())
             put("VEDTAKTYPEKODE", "O")
