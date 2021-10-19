@@ -9,14 +9,21 @@ import java.io.InputStream
 
 class AvroDeserializer : Deserializer<GenericRecord> {
     companion object {
-        val schema = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK.avsc".toInputStream())
+        val dagpengeVedtakSchemaV1 = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V1.avsc".toInputStream())
+        val dagpengeVedtakSchemaV2 = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V2.avsc".toInputStream())
+
+        val dagpengeVedtakReaderV1 = GenericDatumReader<GenericRecord>(dagpengeVedtakSchemaV1)
+        val dagpengeVedtakReaderV2 = GenericDatumReader<GenericRecord>(dagpengeVedtakSchemaV2)
     }
     override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
     override fun deserialize(topic: String, data: ByteArray): GenericRecord {
-        val reader = GenericDatumReader<GenericRecord>(schema)
-        return reader.read(null, DecoderFactory.get().binaryDecoder(data, null))
+        return try {
+            dagpengeVedtakReaderV2.read(null, DecoderFactory.get().binaryDecoder(data, null))
+        } catch (e: Exception) {
+            dagpengeVedtakReaderV1.read(null, DecoderFactory.get().binaryDecoder(data, null))
+        }
     }
 
     override fun close() {

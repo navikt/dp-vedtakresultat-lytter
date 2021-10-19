@@ -14,11 +14,11 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertNotNull
 
-class AvroDeserializerTest {
+class AvroDeserializerTestV2 {
     val oslo = ZoneId.of("Europe/Oslo")
 
     @Test
-    fun `can read an object`() {
+    fun `can read a v2 object`() {
         val deser = AvroDeserializer()
         val vedtak = Vedtak(
             table = "table",
@@ -26,15 +26,13 @@ class AvroDeserializerTest {
             opTs = ZonedDateTime.now(oslo).minusHours(4),
             currentTs = ZonedDateTime.now(oslo),
             pos = "",
-            primaryKeys = listOf("vedtakId"),
-            tokens = mapOf("test" to "token"),
             vedtakId = 2.0,
             vedtakTypeKode = "kjgkjhhjk"
         )
-        val vedtakAsGenericRecord = vedtak.toGenericRecord()
+        val vedtakAsGenericRecord = vedtak.toGenericRecordV2()
         val out = ByteArrayOutputStream()
         val encoder = EncoderFactory.get().binaryEncoder(out, null)
-        val writer = GenericDatumWriter<GenericRecord>(AvroDeserializer.schema)
+        val writer = GenericDatumWriter<GenericRecord>(AvroDeserializer.dagpengeVedtakSchemaV2)
         writer.write(vedtakAsGenericRecord, encoder)
         encoder.flush()
         val record = deser.deserialize("some_topic", out.toByteArray())
@@ -57,14 +55,12 @@ class AvroDeserializerTest {
     private val arenaCurrentTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
     fun lagArenaHendelse(): GenericData.Record {
 
-        return GenericData.Record(AvroDeserializer.schema).apply {
+        return GenericData.Record(AvroDeserializer.dagpengeVedtakSchemaV2).apply {
             put("table", "table")
             put("op_type", "I")
             put("op_ts", ZonedDateTime.now().format(arenaOpTsFormat))
             put("current_ts", ZonedDateTime.now().format(arenaCurrentTsFormat))
             put("pos", "1")
-            put("primary_keys", listOf("VEDTAK_ID"))
-            put("tokens", mapOf("tt" to "tt"))
             put("VEDTAK_ID", 36737638.toDouble())
             put("VEDTAKTYPEKODE", "O")
             put("VEDTAKSTATUSKODE", "IVERK")

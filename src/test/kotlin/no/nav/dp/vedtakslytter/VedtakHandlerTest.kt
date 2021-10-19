@@ -54,7 +54,6 @@ class VedtakHandlerTest {
         opTs = ZonedDateTime.now().minusHours(6),
         currentTs = ZonedDateTime.now().minusHours(3),
         pos = "",
-        primaryKeys = listOf("VEDTAKID"),
         vedtakTypeKode = "O",
         vedtakStatusKode = "IVERK",
         minsteInntektSubsumsjonsId = ulid.nextULID(),
