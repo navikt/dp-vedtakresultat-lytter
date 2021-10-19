@@ -5,7 +5,6 @@ import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.kafka.common.serialization.Deserializer
-import java.io.IOException
 import java.io.InputStream
 
 class AvroDeserializer : Deserializer<GenericRecord> {
@@ -22,7 +21,7 @@ class AvroDeserializer : Deserializer<GenericRecord> {
     override fun deserialize(topic: String, data: ByteArray): GenericRecord {
         return try {
             dagpengeVedtakReaderV2.read(null, DecoderFactory.get().binaryDecoder(data, null))
-        } catch(e: IOException) {
+        } catch (e: Exception) {
             dagpengeVedtakReaderV1.read(null, DecoderFactory.get().binaryDecoder(data, null))
         }
     }

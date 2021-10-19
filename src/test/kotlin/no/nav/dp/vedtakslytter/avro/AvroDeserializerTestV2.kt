@@ -14,11 +14,11 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertNotNull
 
-class AvroDeserializerTestV1 {
+class AvroDeserializerTestV2 {
     val oslo = ZoneId.of("Europe/Oslo")
 
     @Test
-    fun `can read a v1 object`() {
+    fun `can read a v2 object`() {
         val deser = AvroDeserializer()
         val vedtak = Vedtak(
             table = "table",
@@ -29,10 +29,10 @@ class AvroDeserializerTestV1 {
             vedtakId = 2.0,
             vedtakTypeKode = "kjgkjhhjk"
         )
-        val vedtakAsGenericRecord = vedtak.toGenericRecordV1()
+        val vedtakAsGenericRecord = vedtak.toGenericRecordV2()
         val out = ByteArrayOutputStream()
         val encoder = EncoderFactory.get().binaryEncoder(out, null)
-        val writer = GenericDatumWriter<GenericRecord>(AvroDeserializer.dagpengeVedtakSchemaV1)
+        val writer = GenericDatumWriter<GenericRecord>(AvroDeserializer.dagpengeVedtakSchemaV2)
         writer.write(vedtakAsGenericRecord, encoder)
         encoder.flush()
         val record = deser.deserialize("some_topic", out.toByteArray())
@@ -55,14 +55,12 @@ class AvroDeserializerTestV1 {
     private val arenaCurrentTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
     fun lagArenaHendelse(): GenericData.Record {
 
-        return GenericData.Record(AvroDeserializer.dagpengeVedtakSchemaV1).apply {
+        return GenericData.Record(AvroDeserializer.dagpengeVedtakSchemaV2).apply {
             put("table", "table")
             put("op_type", "I")
             put("op_ts", ZonedDateTime.now().format(arenaOpTsFormat))
             put("current_ts", ZonedDateTime.now().format(arenaCurrentTsFormat))
             put("pos", "1")
-            put("primary_keys", listOf("VEDTAK_ID"))
-            put("tokens", mapOf("tt" to "tt"))
             put("VEDTAK_ID", 36737638.toDouble())
             put("VEDTAKTYPEKODE", "O")
             put("VEDTAKSTATUSKODE", "IVERK")

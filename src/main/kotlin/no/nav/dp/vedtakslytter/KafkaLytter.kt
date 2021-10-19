@@ -196,8 +196,6 @@ data class Vedtak(
     val opTs: ZonedDateTime,
     val currentTs: ZonedDateTime,
     val pos: String,
-    val primaryKeys: List<String> = emptyList(),
-    val tokens: Map<String, String> = emptyMap(),
     val vedtakId: Double,
     val vedtakTypeKode: String? = null,
     val vedtakStatusKode: String? = null,
@@ -211,15 +209,36 @@ data class Vedtak(
     val modUser: String? = null,
     val modDato: String? = null
 ) {
-    fun toGenericRecord(): GenericRecord {
-        return GenericRecordBuilder(AvroDeserializer.schema)
+    fun toGenericRecordV1(): GenericRecord {
+        return GenericRecordBuilder(AvroDeserializer.dagpengeVedtakSchemaV1)
             .set("table", table)
             .set("op_type", opType)
             .set("op_ts", opTs.format(arenaOpTsFormat))
             .set("current_ts", currentTs.format(arenaCurrentTsFormat))
-            .set("primary_keys", primaryKeys)
             .set("pos", pos)
-            .set("tokens", tokens)
+            .set("primary_keys", emptyList<String>())
+            .set("tokens", emptyMap<String, String>())
+            .set("VEDTAK_ID", vedtakId)
+            .set("VEDTAKTYPEKODE", vedtakTypeKode)
+            .set("VEDTAKSTATUSKODE", vedtakStatusKode)
+            .set("UTFALLKODE", utfallKode)
+            .set("MINSTEINNTEKT_SUBSUMSJONSID", minsteInntektSubsumsjonsId)
+            .set("PERIODE_SUBSUMSJONSID", periodeSubsumsjonsId)
+            .set("GRUNNLAG_SUBSUMSJONSID", grunnlagSubsumsjonsId)
+            .set("SATS_SUBSUMSJONSID", satsSubsumsjonsId)
+            .set("REG_USER", regUser)
+            .set("REG_DATO", regDato)
+            .set("MOD_USER", modUser)
+            .set("MOD_DATO", modDato).build()
+    }
+
+    fun toGenericRecordV2(): GenericRecord {
+        return GenericRecordBuilder(AvroDeserializer.dagpengeVedtakSchemaV2)
+            .set("table", table)
+            .set("op_type", opType)
+            .set("op_ts", opTs.format(arenaOpTsFormat))
+            .set("current_ts", currentTs.format(arenaCurrentTsFormat))
+            .set("pos", pos)
             .set("VEDTAK_ID", vedtakId)
             .set("VEDTAKTYPEKODE", vedtakTypeKode)
             .set("VEDTAKSTATUSKODE", vedtakStatusKode)
@@ -246,8 +265,6 @@ data class Vedtak(
                 opTs = LocalDateTime.parse(record.get("op_ts").toString(), arenaOpTsFormat).atZone(oslo),
                 currentTs = LocalDateTime.parse(record.get("current_ts").toString(), arenaCurrentTsFormat).atZone(oslo),
                 pos = record.get("pos").toString(),
-                primaryKeys = record.get("primary_keys") as List<String>,
-                tokens = record.get("tokens") as Map<String, String>,
                 vedtakId = record.get("VEDTAK_ID") as Double,
                 vedtakTypeKode = record.get("VEDTAKTYPEKODE")?.toString(),
                 vedtakStatusKode = record.get("VEDTAKSTATUSKODE")?.toString(),
@@ -265,6 +282,6 @@ data class Vedtak(
     }
 
     override fun toString(): String {
-        return "Vedtak(table='$table', opType='$opType', opTs='$opTs', currentTs='$currentTs', pos='$pos', primaryKeys='$primaryKeys', tokens=$tokens, vedtakId=$vedtakId, vedtakTypeKode=$vedtakTypeKode, vedtakStatusKode=$vedtakStatusKode, utfallKode=$utfallKode, minsteInntektSubsumsjonsId=$minsteInntektSubsumsjonsId, periodeSubsumsjonsId=$periodeSubsumsjonsId, grunnlagSubsumsjonsId=$grunnlagSubsumsjonsId, satsSubsumsjonsId=$satsSubsumsjonsId)"
+        return "Vedtak(table='$table', opType='$opType', opTs='$opTs', currentTs='$currentTs', pos='$pos', vedtakId=$vedtakId, vedtakTypeKode=$vedtakTypeKode, vedtakStatusKode=$vedtakStatusKode, utfallKode=$utfallKode, minsteInntektSubsumsjonsId=$minsteInntektSubsumsjonsId, periodeSubsumsjonsId=$periodeSubsumsjonsId, grunnlagSubsumsjonsId=$grunnlagSubsumsjonsId, satsSubsumsjonsId=$satsSubsumsjonsId)"
     }
 }
