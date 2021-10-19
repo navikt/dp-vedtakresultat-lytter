@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream
 
 class AvroSerializer : Serializer<GenericRecord> {
     companion object {
-        val schema = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK.avsc".toInputStream())
+        val schema = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V1.avsc".toInputStream())
     }
 
     override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
