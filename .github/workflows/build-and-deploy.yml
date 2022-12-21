@@ -43,7 +43,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Archive NAIS yaml
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/aiven_gcp'
         uses: actions/upload-artifact@v3
         with:
           name: nais-yaml
