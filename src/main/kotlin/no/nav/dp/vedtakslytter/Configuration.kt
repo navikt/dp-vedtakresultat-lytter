@@ -49,7 +49,7 @@ object Configuration {
                 KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG,
                 config[Key("KAFKA_SCHEMA_REGISTRY", stringType)]
             )
-            put(ConsumerConfig.GROUP_ID_CONFIG, config[Key("kafka.consumer.groupid", stringType)])
+            put(ConsumerConfig.GROUP_ID_CONFIG, "dp-vedtakresultat-lytter-v2")
             put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)
             put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroDeserializer::class.java)
             put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
@@ -65,7 +65,7 @@ object Configuration {
             put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "1")
             put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
             put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
-            put(ProducerConfig.CLIENT_ID_CONFIG, "dp-vedtakresultat-lytter")
+            put(ProducerConfig.CLIENT_ID_CONFIG, "dp-vedtakresultat-lytter-v2")
         }
     }
 }
