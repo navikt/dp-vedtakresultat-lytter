@@ -22,7 +22,7 @@ object Configuration {
         ConfigurationProperties.systemProperties() overriding EnvironmentVariables
     }
 
-    val consumerTopic = "aapen-arena-dagpengevedtakferdigstilt-v1"
+    val consumerTopic = "teamarenanais.aapen-arena-dagpengevedtakferdigstilt-v1"
     val producerTopic = "teamdagpenger.subsumsjonbrukt.v1"
     val commonProps: Properties by lazy {
         Properties().apply {
