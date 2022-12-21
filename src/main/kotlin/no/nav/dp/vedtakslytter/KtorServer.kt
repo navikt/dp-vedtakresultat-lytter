@@ -1,4 +1,4 @@
-package no.nav.dp.health
+package no.nav.dp.vedtakslytter
 
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -20,7 +20,6 @@ import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.dp.vedtakslytter.KafkaLytter
 
 object KtorServer {
 
