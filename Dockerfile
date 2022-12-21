@@ -1,3 +1,3 @@
-FROM navikt/java:11
+FROM ghcr.io/navikt/baseimages/temurin:18
 
 COPY build/libs/*-all.jar app.jar

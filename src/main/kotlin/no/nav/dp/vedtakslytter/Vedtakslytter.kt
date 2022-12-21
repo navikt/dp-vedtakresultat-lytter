@@ -4,7 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import no.nav.dp.health.HealthServer
+import no.nav.dp.health.KtorServer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 fun main(args: Array<String>) {
     runBlocking {
 
-        HealthServer.startServer(port = 8099).start(wait = false)
+        KtorServer.startServer(port = 8099).start(wait = false)
         KafkaLytter.apply {
             create()
             run()

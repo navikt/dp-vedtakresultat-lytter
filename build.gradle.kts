@@ -28,8 +28,9 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     // Http Server
-    implementation(Ktor.serverNetty)
-    implementation(Ktor.micrometerMetrics)
+    implementation(Ktor2.Server.library("cio"))
+    implementation(Ktor2.Server.library("default-headers"))
+    implementation(Ktor2.Server.library("metrics-micrometer"))
 
     // Json (de)serialisering
     implementation(Jackson.kotlin)
@@ -80,8 +81,8 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_18
+    targetCompatibility = JavaVersion.VERSION_18
 }
 
 tasks.withType<Test> {
