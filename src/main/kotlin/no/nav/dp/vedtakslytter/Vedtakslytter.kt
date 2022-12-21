@@ -8,10 +8,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
-fun main(args: Array<String>) {
+fun main() {
     runBlocking {
 
-        KtorServer.startServer(port = 8099).start(wait = false)
         KafkaLytter.apply {
             create()
             run()
@@ -24,6 +23,7 @@ fun main(args: Array<String>) {
                 delay(TimeUnit.SECONDS.toMillis(60))
             }
         }
+        KtorServer.startServer(port = 8099).start(wait = true)
     }
 }
 
