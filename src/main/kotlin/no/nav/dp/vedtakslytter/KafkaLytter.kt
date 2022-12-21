@@ -60,6 +60,7 @@ object KafkaLytter : CoroutineScope {
             kafkaProducer.partitionsFor(Configuration.producerTopic)
             true
         } catch (e: Exception) {
+            logger.error(e) {"Producer er ikke alive"}
             false
         }
     }
