@@ -18,23 +18,19 @@ class VedtakHandlerTest {
 
         mockProducer.history().size shouldBe 4
         val resultater = mockProducer.history().map {
-            subsumsjonAdapter.fromJson(it.value())!!
+            subsumsjonAdapter.readValue(it.value(), SubsumsjonBrukt::class.java)!!
         }
 
-        resultater.shouldHaveSingleElement {
-            s ->
+        resultater.shouldHaveSingleElement { s ->
             s.id == nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.minsteInntektSubsumsjonsId
         }
-        resultater.shouldHaveSingleElement {
-            s ->
+        resultater.shouldHaveSingleElement { s ->
             s.id == nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.periodeSubsumsjonsId
         }
-        resultater.shouldHaveSingleElement {
-            s ->
+        resultater.shouldHaveSingleElement { s ->
             s.id == grunnlagOgSatsSubsumsjon.grunnlagSubsumsjonsId
         }
-        resultater.shouldHaveSingleElement {
-            s ->
+        resultater.shouldHaveSingleElement { s ->
             s.id == grunnlagOgSatsSubsumsjon.satsSubsumsjonsId
         }
     }

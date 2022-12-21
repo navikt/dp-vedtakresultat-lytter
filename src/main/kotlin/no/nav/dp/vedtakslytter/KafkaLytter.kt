@@ -1,6 +1,8 @@
 package no.nav.dp.vedtakslytter
 
-import com.squareup.moshi.JsonAdapter
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.prometheus.client.Counter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -149,7 +151,7 @@ class VedtakHandler(private val kafkaProducer: Producer<String, String>, private
                 ProducerRecord(
                     topic,
                     subsumsjonBrukt.id,
-                    subsumsjonAdapter.toJson(subsumsjonBrukt)
+                    subsumsjonAdapter.writeValueAsString(subsumsjonBrukt)
                 )
             ).get(500, TimeUnit.MILLISECONDS)
 
@@ -169,7 +171,10 @@ enum class SubsumsjonType {
     SATS, GRUNNLAG, PERIODE, MINSTEINNTEKT
 }
 
-val subsumsjonAdapter: JsonAdapter<SubsumsjonBrukt> = moshiInstance.adapter(SubsumsjonBrukt::class.java)
+val subsumsjonAdapter = jacksonObjectMapper().apply {
+    registerModule(JavaTimeModule())
+    disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+}
 
 fun Double.roundedString(): String {
     return if (this.toLong().toDouble().equals(this)) {
