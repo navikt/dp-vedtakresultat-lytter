@@ -26,12 +26,9 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 
-val aivenTopic = "teamdagpenger.subsumsjonbrukt.v1"
-
 object KafkaLytter : CoroutineScope {
     val logger = KotlinLogging.logger {}
     lateinit var job: Job
-    lateinit var config: Configuration
     val MESSAGES_SENT = Counter.build().name("subsumsjon_brukt_sendt").help("Subsumsjoner sendt videre til Kafka")
         .labelNames("subsumsjonstype", "utfall", "status").register()
     val MESSAGES_RECEIVED = Counter.build().name("vedtakresultat_mottatt").help("Vedtakresultat mottatt").register()
@@ -39,8 +36,8 @@ object KafkaLytter : CoroutineScope {
         Counter.build().name("subsumsjon_brukt_error").help("Feil i sending av transformert melding").register()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
-    val kafkaProducer by lazy { KafkaProducer<String, String>(config.kafka.toAivenProducerProps()) }
-    val vedtakHandler by lazy { VedtakHandler(kafkaProducer, aivenTopic) }
+    val kafkaProducer by lazy { KafkaProducer<String, String>(Configuration.producerProps) }
+    val vedtakHandler by lazy { VedtakHandler(kafkaProducer, Configuration.producerTopic) }
 
     init {
         Runtime.getRuntime().addShutdownHook(Thread(::cancel))
@@ -58,23 +55,22 @@ object KafkaLytter : CoroutineScope {
 
     private fun producerIsAlive(): Boolean {
         return try {
-            kafkaProducer.partitionsFor(aivenTopic)
+            kafkaProducer.partitionsFor(Configuration.producerTopic)
             true
         } catch (e: Exception) {
             false
         }
     }
 
-    fun create(config: Configuration) {
+    fun create() {
         this.job = Job()
-        this.config = config
     }
 
     fun run() {
         launch {
             logger.info("Starter kafka consumer")
-            KafkaConsumer<String, GenericRecord>(config.kafka.toConsumerProps()).use { consumer ->
-                consumer.subscribe(listOf(config.kafka.topic))
+            KafkaConsumer<String, GenericRecord>(Configuration.consumerProps).use { consumer ->
+                consumer.subscribe(listOf(Configuration.consumerTopic))
                 while (job.isActive) {
                     try {
                         val records = consumer.poll(Duration.of(100, ChronoUnit.MILLIS))
@@ -93,6 +89,7 @@ object KafkaLytter : CoroutineScope {
         }
     }
 }
+
 class VedtakHandler(private val kafkaProducer: Producer<String, String>, private val topic: String) {
 
     fun handleVedtak(vedtak: Vedtak) {

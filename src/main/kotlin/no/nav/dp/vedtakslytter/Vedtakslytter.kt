@@ -11,11 +11,10 @@ import java.util.concurrent.TimeUnit
 
 fun main(args: Array<String>) {
     runBlocking {
-        val config = Configuration()
 
-        HealthServer.startServer(config.application.httpPort).start(wait = false)
+        HealthServer.startServer(port = 8099).start(wait = false)
         KafkaLytter.apply {
-            create(config)
+            create()
             run()
         }
         GlobalScope.launch {
