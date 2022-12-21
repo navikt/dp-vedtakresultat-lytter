@@ -1,5 +1,6 @@
 package no.nav.dp.vedtakslytter.avro
 
+import mu.KotlinLogging
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericRecord
@@ -9,12 +10,15 @@ import java.io.InputStream
 
 class AvroDeserializer : Deserializer<GenericRecord> {
     companion object {
-        val dagpengeVedtakSchemaV1 = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V1.avsc".toInputStream())
-        val dagpengeVedtakSchemaV2 = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V2.avsc".toInputStream())
+        val dagpengeVedtakSchemaV1 =
+            Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V1.avsc".toInputStream())
+        val dagpengeVedtakSchemaV2 =
+            Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V2.avsc".toInputStream())
 
         val dagpengeVedtakReaderV1 = GenericDatumReader<GenericRecord>(dagpengeVedtakSchemaV1)
         val dagpengeVedtakReaderV2 = GenericDatumReader<GenericRecord>(dagpengeVedtakSchemaV2)
     }
+
     override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
@@ -22,6 +26,7 @@ class AvroDeserializer : Deserializer<GenericRecord> {
         return try {
             dagpengeVedtakReaderV2.read(null, DecoderFactory.get().binaryDecoder(data, null))
         } catch (e: Exception) {
+            logger.error(e) { "Feil ved deserialisering. Data: ${String(data)}" }
             dagpengeVedtakReaderV1.read(null, DecoderFactory.get().binaryDecoder(data, null))
         }
     }
@@ -29,6 +34,8 @@ class AvroDeserializer : Deserializer<GenericRecord> {
     override fun close() {
     }
 }
+
+private val logger = KotlinLogging.logger {}
 
 fun String.toInputStream(): InputStream {
     return AvroDeserializer::class.java.getResourceAsStream("/$this")!!
