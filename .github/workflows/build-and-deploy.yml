@@ -52,7 +52,7 @@ jobs:
   deploy-dev:
     name: Deploy to dev
     needs: [build]
-    if: github.ref == 'refs/heads/aiven_gcp'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Fetch NAIS yaml
@@ -69,22 +69,22 @@ jobs:
           VAR: KAFKA_POOL=nav-dev
           PRINT_PAYLOAD: true
 
-#  deploy-prod:
-#    name: Deploy to Production
-#    needs: [deploy-dev]
-#    if: github.ref == 'refs/heads/master'
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Fetch NAIS yaml
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: nais-yaml
-#          path: nais
-#
-#      - uses: nais/deploy/actions/deploy@v1
-#        env:
-#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-#          CLUSTER: prod-gcp
-#          RESOURCE: nais/nais.yaml
-#          VAR: KAFKA_POOL=nav-prod
-#          PRINT_PAYLOAD: true
+  deploy-prod:
+    name: Deploy to Production
+    needs: [deploy-dev]
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch NAIS yaml
+        uses: actions/download-artifact@v3
+        with:
+          name: nais-yaml
+          path: nais
+
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: prod-gcp
+          RESOURCE: nais/nais.yaml
+          VAR: KAFKA_POOL=nav-prod
+          PRINT_PAYLOAD: true
