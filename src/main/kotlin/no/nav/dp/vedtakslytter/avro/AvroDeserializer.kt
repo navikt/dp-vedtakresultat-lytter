@@ -8,7 +8,7 @@ import org.apache.avro.io.DecoderFactory
 import org.apache.kafka.common.serialization.Deserializer
 import java.io.InputStream
 
-val logger = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 class AvroDeserializer : Deserializer<GenericRecord> {
     companion object {
@@ -36,8 +36,6 @@ class AvroDeserializer : Deserializer<GenericRecord> {
     override fun close() {
     }
 }
-
-private val logger = KotlinLogging.logger {}
 
 fun String.toInputStream(): InputStream {
     return AvroDeserializer::class.java.getResourceAsStream("/$this")!!
