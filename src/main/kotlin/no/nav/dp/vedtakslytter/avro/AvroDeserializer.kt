@@ -12,12 +12,15 @@ val logger = KotlinLogging.logger {}
 
 class AvroDeserializer : Deserializer<GenericRecord> {
     companion object {
-        val dagpengeVedtakSchemaV1 = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V1.avsc".toInputStream())
-        val dagpengeVedtakSchemaV2 = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V2.avsc".toInputStream())
+        val dagpengeVedtakSchemaV1 =
+            Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V1.avsc".toInputStream())
+        val dagpengeVedtakSchemaV2 =
+            Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V2.avsc".toInputStream())
 
         val dagpengeVedtakReaderV1 = GenericDatumReader<GenericRecord>(dagpengeVedtakSchemaV1)
         val dagpengeVedtakReaderV2 = GenericDatumReader<GenericRecord>(dagpengeVedtakSchemaV2)
     }
+
     override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
@@ -33,6 +36,8 @@ class AvroDeserializer : Deserializer<GenericRecord> {
     override fun close() {
     }
 }
+
+private val logger = KotlinLogging.logger {}
 
 fun String.toInputStream(): InputStream {
     return AvroDeserializer::class.java.getResourceAsStream("/$this")!!

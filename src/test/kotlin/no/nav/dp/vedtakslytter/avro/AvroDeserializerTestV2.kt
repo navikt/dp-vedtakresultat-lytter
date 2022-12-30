@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import kotlin.test.assertNotNull
 
 class AvroDeserializerTestV2 {
@@ -23,8 +24,8 @@ class AvroDeserializerTestV2 {
         val vedtak = Vedtak(
             table = "table",
             opType = "I",
-            opTs = ZonedDateTime.now(oslo).minusHours(4),
-            currentTs = ZonedDateTime.now(oslo),
+            opTs = ZonedDateTime.now(oslo).minusHours(4).truncatedTo(ChronoUnit.SECONDS),
+            currentTs = ZonedDateTime.now(oslo).truncatedTo(ChronoUnit.SECONDS),
             pos = "",
             vedtakId = 2.0,
             vedtakTypeKode = "kjgkjhhjk"
@@ -57,8 +58,8 @@ class AvroDeserializerTestV2 {
         return GenericData.Record(AvroDeserializer.dagpengeVedtakSchemaV2).apply {
             put("table", "table")
             put("op_type", "I")
-            put("op_ts", ZonedDateTime.now().format(arenaOpTsFormat))
-            put("current_ts", ZonedDateTime.now().format(arenaOpTsFormat))
+            put("op_ts", ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS).format(arenaOpTsFormat))
+            put("current_ts", ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS).format(arenaOpTsFormat))
             put("pos", "1")
             put("VEDTAK_ID", 36737638.toDouble())
             put("VEDTAKTYPEKODE", "O")

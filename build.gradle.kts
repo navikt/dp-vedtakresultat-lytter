@@ -9,7 +9,6 @@ plugins {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
     maven("https://packages.confluent.io/maven/")
     maven("https://jitpack.io")
@@ -29,20 +28,13 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     // Http Server
-    implementation(Ktor.serverNetty)
-    implementation(Ktor.auth)
-    implementation(Ktor.micrometerMetrics)
-
-    // Http Klient
-    implementation(Fuel.fuel)
-    implementation(Fuel.library("coroutines"))
-    implementation(Fuel.fuelMoshi)
-    implementation(Dagpenger.Biblioteker.ktorUtils)
+    implementation(Ktor2.Server.library("cio"))
+    implementation(Ktor2.Server.library("default-headers"))
+    implementation(Ktor2.Server.library("metrics-micrometer"))
 
     // Json (de)serialisering
-    implementation(Moshi.moshi)
-    implementation(Moshi.moshiKotlin)
-    implementation(Moshi.moshiAdapters)
+    implementation(Jackson.kotlin)
+    implementation(Jackson.jsr310)
 
     // Unik id
     implementation(Ulid.ulid)
@@ -74,14 +66,7 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation(Junit5.engine)
     testImplementation(KoTest.runner)
-    testImplementation(Ktor.library("client"))
-    testImplementation(Ktor.ktorTest) {
-        // https://youtrack.jetbrains.com/issue/KT-46090
-        exclude("org.jetbrains.kotlin", "kotlin-test-junit")
-    }
-    testImplementation(KafkaEmbedded.env)
     testImplementation(Mockk.mockk)
-    testImplementation(Wiremock.standalone)
 }
 
 configurations {
@@ -96,8 +81,8 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_18
+    targetCompatibility = JavaVersion.VERSION_18
 }
 
 tasks.withType<Test> {
