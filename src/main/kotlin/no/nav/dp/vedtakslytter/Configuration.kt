@@ -52,7 +52,7 @@ object Configuration {
             put(ConsumerConfig.GROUP_ID_CONFIG, "dp-vedtakresultat-lytter-v2")
             put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)
             put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroDeserializer::class.java)
-            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
+            put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
             put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false)
         }
     }
