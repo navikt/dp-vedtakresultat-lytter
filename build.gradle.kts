@@ -76,8 +76,7 @@ configurations {
 }
 
 application {
-    applicationName = "dp-vedtakresultat-lytter"
-    mainClassName = "no.nav.dp.vedtakslytter.VedtakslytterKt"
+    mainClass.set("no.nav.dp.vedtakslytter.VedtakslytterKt")
 }
 
 java {
