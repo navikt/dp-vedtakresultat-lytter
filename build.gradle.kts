@@ -1,32 +1,16 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version Kotlin.version
+    id("common")
     application
-    id(Spotless.spotless) version Spotless.version
-    id(Shadow.shadow) version Shadow.version
 }
 
 repositories {
     mavenCentral()
     maven("https://packages.confluent.io/maven/")
-    maven("https://jitpack.io")
 }
 
-configurations {
-    "implementation" {
-        exclude(group = "org.slf4j", module = "slf4j-log4j12")
-        exclude(group = "ch.qos.logback", module = "logback-classic")
-    }
-    "testImplementation" {
-        exclude(group = "org.slf4j", module = "slf4j-log4j12")
-        exclude(group = "ch.qos.logback", module = "logback-classic")
-    }
-}
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
     // Http Server
     implementation(Ktor2.Server.library("cio"))
     implementation(Ktor2.Server.library("default-headers"))
@@ -69,19 +53,8 @@ dependencies {
     testImplementation(Mockk.mockk)
 }
 
-configurations {
-    this.all {
-        exclude(group = "ch.qos.logback")
-    }
-}
-
 application {
     mainClass.set("no.nav.dp.vedtakslytter.VedtakslytterKt")
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_18
-    targetCompatibility = JavaVersion.VERSION_18
 }
 
 tasks.withType<Test> {
@@ -92,28 +65,4 @@ tasks.withType<Test> {
         exceptionFormat = TestExceptionFormat.FULL
         events("passed", "skipped", "failed")
     }
-}
-
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "1.8" }
-
-spotless {
-    kotlin {
-        ktlint(Ktlint.version)
-    }
-    kotlinGradle {
-        target("*.gradle.kts", "buildSrc/**/*.kt*")
-        ktlint(Ktlint.version)
-    }
-}
-
-tasks.named("shadowJar") {
-    dependsOn("test")
-}
-
-tasks.named("compileKotlin") {
-    dependsOn("spotlessCheck")
-}
-
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java)
 }

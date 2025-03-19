@@ -17,9 +17,10 @@ class VedtakHandlerTest {
         vedtakHandler.handleVedtak(grunnlagOgSatsSubsumsjon)
 
         mockProducer.history().size shouldBe 4
-        val resultater = mockProducer.history().map {
-            subsumsjonAdapter.readValue(it.value(), SubsumsjonBrukt::class.java)!!
-        }
+        val resultater =
+            mockProducer.history().map {
+                subsumsjonAdapter.readValue(it.value(), SubsumsjonBrukt::class.java)!!
+            }
 
         resultater.shouldHaveSingleElement { s ->
             s.id == nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.minsteInntektSubsumsjonsId
@@ -43,23 +44,25 @@ class VedtakHandlerTest {
     }
 
     val ulid = ULID()
-    val nyRettighetMedMinsteInntektOgPeriodeSubsumsjon = Vedtak(
-        vedtakId = 1337.0,
-        table = "",
-        opType = "I",
-        opTs = ZonedDateTime.now().minusHours(6),
-        currentTs = ZonedDateTime.now().minusHours(3),
-        pos = "",
-        vedtakTypeKode = "O",
-        vedtakStatusKode = "IVERK",
-        minsteInntektSubsumsjonsId = ulid.nextULID(),
-        periodeSubsumsjonsId = ulid.nextULID()
-    )
+    val nyRettighetMedMinsteInntektOgPeriodeSubsumsjon =
+        Vedtak(
+            vedtakId = 1337.0,
+            table = "",
+            opType = "I",
+            opTs = ZonedDateTime.now().minusHours(6),
+            currentTs = ZonedDateTime.now().minusHours(3),
+            pos = "",
+            vedtakTypeKode = "O",
+            vedtakStatusKode = "IVERK",
+            minsteInntektSubsumsjonsId = ulid.nextULID(),
+            periodeSubsumsjonsId = ulid.nextULID(),
+        )
 
-    val grunnlagOgSatsSubsumsjon = nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.copy(
-        minsteInntektSubsumsjonsId = null,
-        periodeSubsumsjonsId = null,
-        satsSubsumsjonsId = ulid.nextULID(),
-        grunnlagSubsumsjonsId = ulid.nextULID()
-    )
+    val grunnlagOgSatsSubsumsjon =
+        nyRettighetMedMinsteInntektOgPeriodeSubsumsjon.copy(
+            minsteInntektSubsumsjonsId = null,
+            periodeSubsumsjonsId = null,
+            satsSubsumsjonsId = ulid.nextULID(),
+            grunnlagSubsumsjonsId = ulid.nextULID(),
+        )
 }

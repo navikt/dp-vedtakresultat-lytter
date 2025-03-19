@@ -12,10 +12,16 @@ class AvroSerializer : Serializer<GenericRecord> {
         val schema = Schema.Parser().parse("GRENSESNITT.FERDIGSTILTE_DAGPENGEVEDTAK_V1.avsc".toInputStream())
     }
 
-    override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+    override fun configure(
+        configs: MutableMap<String, *>?,
+        isKey: Boolean,
+    ) {
     }
 
-    override fun serialize(topic: String?, data: GenericRecord): ByteArray {
+    override fun serialize(
+        topic: String?,
+        data: GenericRecord,
+    ): ByteArray {
         val writer = GenericDatumWriter<GenericRecord>(schema)
         val baos = ByteArrayOutputStream()
         val encoder = EncoderFactory.get().binaryEncoder(baos, null)

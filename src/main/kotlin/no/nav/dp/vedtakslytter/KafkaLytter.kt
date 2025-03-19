@@ -31,11 +31,25 @@ import kotlin.coroutines.CoroutineContext
 object KafkaLytter : CoroutineScope {
     val logger = KotlinLogging.logger {}
     lateinit var job: Job
-    val MESSAGES_SENT = Counter.build().name("subsumsjon_brukt_sendt").help("Subsumsjoner sendt videre til Kafka")
-        .labelNames("subsumsjonstype", "utfall", "status").register()
-    val MESSAGES_RECEIVED = Counter.build().name("vedtakresultat_mottatt").help("Vedtakresultat mottatt").register()
+    val MESSAGES_SENT =
+        Counter
+            .build()
+            .name("subsumsjon_brukt_sendt")
+            .help("Subsumsjoner sendt videre til Kafka")
+            .labelNames("subsumsjonstype", "utfall", "status")
+            .register()
+    val MESSAGES_RECEIVED =
+        Counter
+            .build()
+            .name("vedtakresultat_mottatt")
+            .help("Vedtakresultat mottatt")
+            .register()
     val FAILED_KAFKA_OPS =
-        Counter.build().name("subsumsjon_brukt_error").help("Feil i sending av transformert melding").register()
+        Counter
+            .build()
+            .name("subsumsjon_brukt_error")
+            .help("Feil i sending av transformert melding")
+            .register()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
     val kafkaProducer by lazy { KafkaProducer<String, String>(Configuration.producerProps) }
@@ -55,15 +69,14 @@ object KafkaLytter : CoroutineScope {
         return job.isActive && producerIsAlive()
     }
 
-    private fun producerIsAlive(): Boolean {
-        return try {
+    private fun producerIsAlive(): Boolean =
+        try {
             kafkaProducer.partitionsFor(Configuration.producerTopic)
             true
         } catch (e: Exception) {
             logger.error(e) { "Producer er ikke alive" }
             false
         }
-    }
 
     fun create() {
         this.job = Job()
@@ -77,9 +90,11 @@ object KafkaLytter : CoroutineScope {
                 while (job.isActive) {
                     try {
                         val records = consumer.poll(Duration.of(100, ChronoUnit.MILLIS))
-                        records.asSequence().map {
-                            it.key() to Vedtak.fromGenericRecord(it.value())
-                        }.onEach { logger.info { it } }
+                        records
+                            .asSequence()
+                            .map {
+                                it.key() to Vedtak.fromGenericRecord(it.value())
+                            }.onEach { logger.info { it } }
                             .onEach { MESSAGES_RECEIVED.inc() }
                             .forEach { (_, v) -> vedtakHandler.handleVedtak(v) }
 
@@ -93,8 +108,10 @@ object KafkaLytter : CoroutineScope {
     }
 }
 
-class VedtakHandler(private val kafkaProducer: Producer<String, String>, private val topic: String) {
-
+class VedtakHandler(
+    private val kafkaProducer: Producer<String, String>,
+    private val topic: String,
+) {
     fun handleVedtak(vedtak: Vedtak) {
         vedtak.minsteInntektSubsumsjonsId?.let {
             orienterOmSubsumsjon(
@@ -103,9 +120,9 @@ class VedtakHandler(private val kafkaProducer: Producer<String, String>, private
                     eksternId = vedtak.vedtakId.roundedString(),
                     arenaTs = vedtak.opTs,
                     utfall = vedtak.utfallKode,
-                    vedtakStatus = vedtak.vedtakStatusKode
+                    vedtakStatus = vedtak.vedtakStatusKode,
                 ),
-                SubsumsjonType.MINSTEINNTEKT
+                SubsumsjonType.MINSTEINNTEKT,
             )
         }
         vedtak.periodeSubsumsjonsId?.let {
@@ -115,9 +132,9 @@ class VedtakHandler(private val kafkaProducer: Producer<String, String>, private
                     id = it,
                     arenaTs = vedtak.opTs,
                     utfall = vedtak.utfallKode,
-                    vedtakStatus = vedtak.vedtakStatusKode
+                    vedtakStatus = vedtak.vedtakStatusKode,
                 ),
-                SubsumsjonType.PERIODE
+                SubsumsjonType.PERIODE,
             )
         }
         vedtak.grunnlagSubsumsjonsId?.let {
@@ -127,9 +144,9 @@ class VedtakHandler(private val kafkaProducer: Producer<String, String>, private
                     id = it,
                     arenaTs = vedtak.opTs,
                     utfall = vedtak.utfallKode,
-                    vedtakStatus = vedtak.vedtakStatusKode
+                    vedtakStatus = vedtak.vedtakStatusKode,
                 ),
-                SubsumsjonType.GRUNNLAG
+                SubsumsjonType.GRUNNLAG,
             )
         }
         vedtak.satsSubsumsjonsId?.let {
@@ -139,22 +156,27 @@ class VedtakHandler(private val kafkaProducer: Producer<String, String>, private
                     id = it,
                     arenaTs = vedtak.opTs,
                     utfall = vedtak.utfallKode,
-                    vedtakStatus = vedtak.vedtakStatusKode
+                    vedtakStatus = vedtak.vedtakStatusKode,
                 ),
-                SubsumsjonType.SATS
+                SubsumsjonType.SATS,
             )
         }
     }
 
-    private fun orienterOmSubsumsjon(subsumsjonBrukt: SubsumsjonBrukt, subsumsjonType: SubsumsjonType) {
+    private fun orienterOmSubsumsjon(
+        subsumsjonBrukt: SubsumsjonBrukt,
+        subsumsjonType: SubsumsjonType,
+    ) {
         try {
-            val metadata = kafkaProducer.send(
-                ProducerRecord(
-                    topic,
-                    subsumsjonBrukt.id,
-                    subsumsjonAdapter.writeValueAsString(subsumsjonBrukt)
-                )
-            ).get(500, TimeUnit.MILLISECONDS)
+            val metadata =
+                kafkaProducer
+                    .send(
+                        ProducerRecord(
+                            topic,
+                            subsumsjonBrukt.id,
+                            subsumsjonAdapter.writeValueAsString(subsumsjonBrukt),
+                        ),
+                    ).get(500, TimeUnit.MILLISECONDS)
 
             val utfall = subsumsjonBrukt.utfall ?: "ukjent"
             val vedtakstatus = subsumsjonBrukt.vedtakStatus ?: "ukjent"
@@ -169,21 +191,24 @@ class VedtakHandler(private val kafkaProducer: Producer<String, String>, private
 }
 
 enum class SubsumsjonType {
-    SATS, GRUNNLAG, PERIODE, MINSTEINNTEKT
+    SATS,
+    GRUNNLAG,
+    PERIODE,
+    MINSTEINNTEKT,
 }
 
-val subsumsjonAdapter = jacksonObjectMapper().apply {
-    registerModule(JavaTimeModule())
-    disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-}
+val subsumsjonAdapter =
+    jacksonObjectMapper().apply {
+        registerModule(JavaTimeModule())
+        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    }
 
-fun Double.roundedString(): String {
-    return if (this.toLong().toDouble().equals(this)) {
+fun Double.roundedString(): String =
+    if (this.toLong().toDouble().equals(this)) {
         String.format("%.0f", this)
     } else {
         this.toString()
     }
-}
 
 data class SubsumsjonBrukt(
     val eksternId: String,
@@ -191,7 +216,7 @@ data class SubsumsjonBrukt(
     val arenaTs: ZonedDateTime,
     val ts: Long = Instant.now().toEpochMilli(),
     val utfall: String?,
-    val vedtakStatus: String?
+    val vedtakStatus: String?,
 )
 
 data class Vedtak(
@@ -211,10 +236,10 @@ data class Vedtak(
     val regUser: String? = null,
     val regDato: String? = null,
     val modUser: String? = null,
-    val modDato: String? = null
+    val modDato: String? = null,
 ) {
-    fun toGenericRecordV1(): GenericRecord {
-        return GenericRecordBuilder(AvroDeserializer.dagpengeVedtakSchemaV1)
+    fun toGenericRecordV1(): GenericRecord =
+        GenericRecordBuilder(AvroDeserializer.dagpengeVedtakSchemaV1)
             .set("table", table)
             .set("op_type", opType)
             .set("op_ts", opTs.format(arenaOpTsFormat))
@@ -233,11 +258,11 @@ data class Vedtak(
             .set("REG_USER", regUser)
             .set("REG_DATO", regDato)
             .set("MOD_USER", modUser)
-            .set("MOD_DATO", modDato).build()
-    }
+            .set("MOD_DATO", modDato)
+            .build()
 
-    fun toGenericRecordV2(): GenericRecord {
-        return GenericRecordBuilder(AvroDeserializer.dagpengeVedtakSchemaV2)
+    fun toGenericRecordV2(): GenericRecord =
+        GenericRecordBuilder(AvroDeserializer.dagpengeVedtakSchemaV2)
             .set("table", table)
             .set("op_type", opType)
             .set("op_ts", opTs.format(arenaOpTsFormat))
@@ -254,16 +279,17 @@ data class Vedtak(
             .set("REG_USER", regUser)
             .set("REG_DATO", regDato)
             .set("MOD_USER", modUser)
-            .set("MOD_DATO", modDato).build()
-    }
+            .set("MOD_DATO", modDato)
+            .build()
 
     @Suppress("UNCHECKED_CAST")
     companion object {
         private val arenaOpTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSSSSS]")
         private val arenaCurrentTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
         private val oslo: ZoneId = ZoneId.of("Europe/Oslo")
-        fun fromGenericRecord(record: GenericRecord): Vedtak {
-            return Vedtak(
+
+        fun fromGenericRecord(record: GenericRecord): Vedtak =
+            Vedtak(
                 table = record.get("table").toString(),
                 opType = record.get("op_type").toString(),
                 opTs = LocalDateTime.parse(record.get("op_ts").toString(), arenaOpTsFormat).atZone(oslo),
@@ -280,20 +306,16 @@ data class Vedtak(
                 regUser = record.get("REG_USER")?.toString(),
                 regDato = record.get("REG_DATO")?.toString(),
                 modUser = record.get("MOD_USER")?.toString(),
-                modDato = record.get("MOD_DATO")?.toString()
+                modDato = record.get("MOD_DATO")?.toString(),
             )
-        }
 
-        private fun readCurrentTs(record: GenericRecord): ZonedDateTime = with(record.get("current_ts").toString()) {
-            try {
-                LocalDateTime.parse(this, arenaCurrentTsFormat).atZone(oslo)
-            } catch (e: DateTimeParseException) {
-                LocalDateTime.parse(this, arenaOpTsFormat).atZone(oslo)
+        private fun readCurrentTs(record: GenericRecord): ZonedDateTime =
+            with(record.get("current_ts").toString()) {
+                try {
+                    LocalDateTime.parse(this, arenaCurrentTsFormat).atZone(oslo)
+                } catch (e: DateTimeParseException) {
+                    LocalDateTime.parse(this, arenaOpTsFormat).atZone(oslo)
+                }
             }
-        }
-    }
-
-    override fun toString(): String {
-        return "Vedtak(table='$table', opType='$opType', opTs='$opTs', currentTs='$currentTs', pos='$pos', vedtakId=$vedtakId, vedtakTypeKode=$vedtakTypeKode, vedtakStatusKode=$vedtakStatusKode, utfallKode=$utfallKode, minsteInntektSubsumsjonsId=$minsteInntektSubsumsjonsId, periodeSubsumsjonsId=$periodeSubsumsjonsId, grunnlagSubsumsjonsId=$grunnlagSubsumsjonsId, satsSubsumsjonsId=$satsSubsumsjonsId)"
     }
 }

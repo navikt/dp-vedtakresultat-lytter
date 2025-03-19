@@ -1,6 +1,6 @@
 package no.nav.dp.vedtakslytter
 
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -10,12 +10,11 @@ import java.util.concurrent.TimeUnit
 
 fun main() {
     runBlocking {
-
         KafkaLytter.apply {
             create()
             run()
         }
-        GlobalScope.launch {
+        launch(IO) {
             while (true) {
                 if (KafkaLytter.isRunning()) {
                     logger.trace("Still running")

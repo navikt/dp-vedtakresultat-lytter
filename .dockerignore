@@ -1,2 +1,5 @@
-*
-!build/libs/*.jar
+# Ignore everything
+**
+
+# Except shadow jar
+!build/install

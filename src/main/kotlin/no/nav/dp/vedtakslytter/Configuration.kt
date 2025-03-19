@@ -47,7 +47,7 @@ object Configuration {
             put(SchemaRegistryClientConfig.USER_INFO_CONFIG, "$schemaRegistryUser:$schemaRegistryPassword")
             put(
                 KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                config[Key("KAFKA_SCHEMA_REGISTRY", stringType)]
+                config[Key("KAFKA_SCHEMA_REGISTRY", stringType)],
             )
             put(ConsumerConfig.GROUP_ID_CONFIG, "dp-vedtakresultat-lytter-v2")
             put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java)

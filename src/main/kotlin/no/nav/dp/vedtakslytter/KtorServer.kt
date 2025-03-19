@@ -22,7 +22,6 @@ import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 
 object KtorServer {
-
     suspend fun startServer(port: Int): CIOApplicationEngine {
         DefaultExports.initialize()
         return embeddedServer(CIO, port = port) {

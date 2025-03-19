@@ -21,15 +21,16 @@ class AvroDeserializerTestV1 {
     @Test
     fun `can read a v1 object`() {
         val deser = AvroDeserializer()
-        val vedtak = Vedtak(
-            table = "table",
-            opType = "I",
-            opTs = ZonedDateTime.now(oslo).minusHours(4).truncatedTo(ChronoUnit.SECONDS),
-            currentTs = ZonedDateTime.now(oslo).truncatedTo(ChronoUnit.SECONDS),
-            pos = "",
-            vedtakId = 2.0,
-            vedtakTypeKode = "kjgkjhhjk"
-        )
+        val vedtak =
+            Vedtak(
+                table = "table",
+                opType = "I",
+                opTs = ZonedDateTime.now(oslo).minusHours(4).truncatedTo(ChronoUnit.SECONDS),
+                currentTs = ZonedDateTime.now(oslo).truncatedTo(ChronoUnit.SECONDS),
+                pos = "",
+                vedtakId = 2.0,
+                vedtakTypeKode = "kjgkjhhjk",
+            )
         val vedtakAsGenericRecord = vedtak.toGenericRecordV1()
         val out = ByteArrayOutputStream()
         val encoder = EncoderFactory.get().binaryEncoder(out, null)
@@ -54,8 +55,8 @@ class AvroDeserializerTestV1 {
     private val ulid = ULID()
     private val arenaOpTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSSSSS]")
     private val arenaCurrentTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
-    fun lagArenaHendelse(): GenericData.Record {
 
+    fun lagArenaHendelse(): GenericData.Record {
         return GenericData.Record(AvroDeserializer.dagpengeVedtakSchemaV1).apply {
             put("table", "table")
             put("op_type", "I")

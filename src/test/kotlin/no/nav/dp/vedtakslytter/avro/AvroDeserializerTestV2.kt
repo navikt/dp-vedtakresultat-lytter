@@ -21,15 +21,16 @@ class AvroDeserializerTestV2 {
     @Test
     fun `can read a v2 object`() {
         val deser = AvroDeserializer()
-        val vedtak = Vedtak(
-            table = "table",
-            opType = "I",
-            opTs = ZonedDateTime.now(oslo).minusHours(4).truncatedTo(ChronoUnit.SECONDS),
-            currentTs = ZonedDateTime.now(oslo).truncatedTo(ChronoUnit.SECONDS),
-            pos = "",
-            vedtakId = 2.0,
-            vedtakTypeKode = "kjgkjhhjk"
-        )
+        val vedtak =
+            Vedtak(
+                table = "table",
+                opType = "I",
+                opTs = ZonedDateTime.now(oslo).minusHours(4).truncatedTo(ChronoUnit.SECONDS),
+                currentTs = ZonedDateTime.now(oslo).truncatedTo(ChronoUnit.SECONDS),
+                pos = "",
+                vedtakId = 2.0,
+                vedtakTypeKode = "kjgkjhhjk",
+            )
         val vedtakAsGenericRecord = vedtak.toGenericRecordV2()
         val out = ByteArrayOutputStream()
         val encoder = EncoderFactory.get().binaryEncoder(out, null)

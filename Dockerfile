@@ -1,3 +1,7 @@
-FROM ghcr.io/navikt/baseimages/temurin:18
+FROM gcr.io/distroless/java21
 
-COPY build/libs/*-all.jar app.jar
+ENV TZ="Europe/Oslo"
+
+COPY build/install/*/lib /app/lib
+
+ENTRYPOINT ["java", "-cp", "/app/lib/*", "no.nav.dp.vedtakslytter.VedtakslytterKt"]

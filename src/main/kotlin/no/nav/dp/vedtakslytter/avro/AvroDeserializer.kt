@@ -21,10 +21,16 @@ class AvroDeserializer : Deserializer<GenericRecord> {
         val dagpengeVedtakReaderV2 = GenericDatumReader<GenericRecord>(dagpengeVedtakSchemaV2)
     }
 
-    override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+    override fun configure(
+        configs: MutableMap<String, *>?,
+        isKey: Boolean,
+    ) {
     }
 
-    override fun deserialize(topic: String, data: ByteArray): GenericRecord {
+    override fun deserialize(
+        topic: String,
+        data: ByteArray,
+    ): GenericRecord {
         return try {
             dagpengeVedtakReaderV2.read(null, DecoderFactory.get().binaryDecoder(data, null))
         } catch (e: Exception) {
