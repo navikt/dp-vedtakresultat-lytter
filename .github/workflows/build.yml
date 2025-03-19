@@ -65,7 +65,7 @@ jobs:
         env:
           CLUSTER: dev-gcp
           RESOURCE: .nais/nais.yaml
-          VAR: KAFKA_POOL=nav-dev
+          VAR: KAFKA_POOL=nav-dev,image=${{ needs.build.outputs.image }}
           PRINT_PAYLOAD: true
 
   deploy-prod:
@@ -79,5 +79,5 @@ jobs:
         env:
           CLUSTER: prod-gcp
           RESOURCE: .nais/nais.yaml
-          VAR: KAFKA_POOL=nav-prod
+          VAR: KAFKA_POOL=nav-prod,image=${{ needs.build.outputs.image }}
           PRINT_PAYLOAD: true
