@@ -2,14 +2,14 @@ name: Build and deploy
 
 on: [ push ]
 
+permissions:
+  id-token: write
+
 jobs:
   build:
     name: Build and publish Docker image
     runs-on: ubuntu-latest
     permissions:
-      contents: write # For å submitte dependency graph
-      checks: write
-      pull-requests: write
       id-token: write
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      contents: write # For å submitte dependency graph
     steps:
       - uses: navikt/dagpenger/actions/attest-sign@master
         with:
