@@ -1,5 +1,3 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-
 plugins {
     id("common")
     application
@@ -11,58 +9,46 @@ repositories {
 }
 
 dependencies {
-    // Http Server
-    implementation(Ktor2.Server.library("cio"))
-    implementation(Ktor2.Server.library("default-headers"))
-    implementation(Ktor2.Server.library("metrics-micrometer"))
+
+    // Naisful app
+    implementation("com.github.navikt.tbd-libs:naisful-app:2025.03.30-14.11-a91ce546")
 
     // Json (de)serialisering
-    implementation(Jackson.kotlin)
-    implementation(Jackson.jsr310)
+    implementation(libs.bundles.jackson)
 
     // Unik id
-    implementation(Ulid.ulid)
+    implementation("de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.3.0")
 
     // Miljøkonfigurasjon
-    implementation(Konfig.konfig)
+    implementation(libs.konfig)
 
     // Logging
-    implementation(Kotlin.Logging.kotlinLogging)
-    implementation(Log4j2.api)
-    implementation(Log4j2.core)
-    implementation(Log4j2.slf4j)
-    implementation(Log4j2.library("layout-template-json"))
+    val log4j2Version = "2.19.0"
+    implementation(libs.kotlin.logging)
+    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-layout-template-json:$log4j2Version")
 
     // Kafka
-    implementation(Kafka.clients)
+    implementation("org.apache.kafka:kafka-clients:3.7.1")
 
     // Schema handling
-    implementation(Avro.avro)
-    implementation(Kafka.Confluent.avroStreamSerdes)
+    implementation("org.apache.avro:avro:1.11.4")
+    implementation("io.confluent:kafka-streams-avro-serde:7.3.0")
 
     // Metrics
-    implementation(Prometheus.hotspot)
-    implementation(Prometheus.common)
-    implementation(Prometheus.log4j2)
-    implementation(Micrometer.prometheusRegistry)
+    val version = "0.16.0"
+    implementation("io.prometheus:simpleclient_common:$version")
+    implementation("io.prometheus:simpleclient_hotspot:$version")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.10.1")
 
     // Test related dependencies
     testImplementation(kotlin("test-junit5"))
-    testImplementation(Junit5.engine)
-    testImplementation(KoTest.runner)
-    testImplementation(Mockk.mockk)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotest.assertions.core)
 }
 
 application {
     mainClass.set("no.nav.dp.vedtakslytter.VedtakslytterKt")
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-    testLogging {
-        showExceptions = true
-        showStackTraces = true
-        exceptionFormat = TestExceptionFormat.FULL
-        events("passed", "skipped", "failed")
-    }
 }

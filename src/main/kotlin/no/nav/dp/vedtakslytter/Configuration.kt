@@ -57,6 +57,7 @@ object Configuration {
         }
     }
 
+    val httpPort = 8099
     val producerProps: Properties by lazy {
         Properties().apply {
             putAll(commonProps)
