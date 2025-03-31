@@ -44,7 +44,6 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.1")
 
     // Test related dependencies
-    testImplementation(kotlin("test-junit5"))
     testImplementation(libs.mockk)
     testImplementation(libs.kotest.assertions.core)
 }
