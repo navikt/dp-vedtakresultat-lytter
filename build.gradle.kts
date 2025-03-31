@@ -23,7 +23,7 @@ dependencies {
     implementation(libs.konfig)
 
     // Logging
-    val log4j2Version = "2.19.0"
+    val log4j2Version = "2.24.3"
     implementation(libs.kotlin.logging)
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
@@ -35,13 +35,14 @@ dependencies {
 
     // Schema handling
     implementation("org.apache.avro:avro:1.12.0")
-    implementation("io.confluent:kafka-streams-avro-serde:7.3.0")
+    implementation("org.apache.avro:avro:1.11.4")
+    implementation("io.confluent:kafka-streams-avro-serde:7.9.0")
 
     // Metrics
     val version = "0.16.0"
     implementation("io.prometheus:simpleclient_common:$version")
     implementation("io.prometheus:simpleclient_hotspot:$version")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.10.1")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.14.5")
 
     // Test related dependencies
     testImplementation(libs.mockk)
