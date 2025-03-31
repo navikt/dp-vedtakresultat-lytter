@@ -35,7 +35,7 @@ dependencies {
 
     // Schema handling
     implementation("org.apache.avro:avro:1.11.4")
-    implementation("io.confluent:kafka-streams-avro-serde:7.3.0")
+    implementation("io.confluent:kafka-streams-avro-serde:7.9.0")
 
     // Metrics
     val version = "0.16.0"
