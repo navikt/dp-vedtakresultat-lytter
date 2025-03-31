@@ -23,7 +23,7 @@ dependencies {
     implementation(libs.konfig)
 
     // Logging
-    val log4j2Version = "2.19.0"
+    val log4j2Version = "2.24.3"
     implementation(libs.kotlin.logging)
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
