@@ -41,7 +41,7 @@ dependencies {
     val version = "0.16.0"
     implementation("io.prometheus:simpleclient_common:$version")
     implementation("io.prometheus:simpleclient_hotspot:$version")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.10.1")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.14.5")
 
     // Test related dependencies
     testImplementation(libs.mockk)
