@@ -39,10 +39,7 @@ dependencies {
     implementation("io.confluent:kafka-streams-avro-serde:7.9.0")
 
     // Metrics
-    val version = "0.16.0"
-    implementation("io.prometheus:simpleclient_common:$version")
-    implementation("io.prometheus:simpleclient_hotspot:$version")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.14.5")
+    implementation("io.prometheus:prometheus-metrics-core:1.3.6")
 
     // Test related dependencies
     testImplementation(libs.mockk)

@@ -3,7 +3,7 @@ package no.nav.dp.vedtakslytter
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.prometheus.client.Counter
+import io.prometheus.metrics.core.metrics.Counter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -33,20 +33,20 @@ object KafkaLytter : CoroutineScope {
     lateinit var job: Job
     val MESSAGES_SENT =
         Counter
-            .build()
+            .builder()
             .name("subsumsjon_brukt_sendt")
             .help("Subsumsjoner sendt videre til Kafka")
             .labelNames("subsumsjonstype", "utfall", "status")
             .register()
     val MESSAGES_RECEIVED =
         Counter
-            .build()
+            .builder()
             .name("vedtakresultat_mottatt")
             .help("Vedtakresultat mottatt")
             .register()
     val FAILED_KAFKA_OPS =
         Counter
-            .build()
+            .builder()
             .name("subsumsjon_brukt_error")
             .help("Feil i sending av transformert melding")
             .register()
@@ -180,7 +180,7 @@ class VedtakHandler(
 
             val utfall = subsumsjonBrukt.utfall ?: "ukjent"
             val vedtakstatus = subsumsjonBrukt.vedtakStatus ?: "ukjent"
-            KafkaLytter.MESSAGES_SENT.labels(subsumsjonType.toString().lowercase(), utfall, vedtakstatus).inc()
+            KafkaLytter.MESSAGES_SENT.labelValues(subsumsjonType.toString().lowercase(), utfall, vedtakstatus).inc()
             KafkaLytter.logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${metadata.offset()}" }
         } catch (e: Exception) {
             KafkaLytter.FAILED_KAFKA_OPS.inc()
