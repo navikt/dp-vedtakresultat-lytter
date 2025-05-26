@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teamdagpenger
 spec:
-  image: {{ image }}
+  image: "{{ image }}"
   port: 8099
   liveness:
     path: /isalive
@@ -25,7 +25,7 @@ spec:
       cpu: 100m
       memory: 128Mi
   kafka:
-    pool: {{ KAFKA_POOL }}
+    pool: "{{ KAFKA_POOL }}"
   vault:
     enabled: true
   secureLogs:
