@@ -31,7 +31,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-layout-template-json:$log4j2Version")
 
     // Kafka
-    implementation("org.apache.kafka:kafka-clients:7.9.1-ce")
+    implementation("org.apache.kafka:kafka-clients:8.0.0-ce")
 
     // Schema handling
     implementation("org.apache.avro:avro:1.12.0")
