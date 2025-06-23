@@ -62,11 +62,16 @@ object KafkaLytter : CoroutineScope {
     fun cancel() {
         kafkaProducer.close()
         job.cancel()
+        logger.info("Skrur av KafkaLytter")
     }
 
     fun isRunning(): Boolean {
         logger.trace { "Asked if running" }
-        return job.isActive && producerIsAlive()
+        val alive = job.isActive && producerIsAlive()
+        if (!alive) {
+            logger.warn { "KafkaLytter is not running. Kjører jobben? ${job.isActive}. Kjører produsenten? ${producerIsAlive()}" }
+        }
+        return alive
     }
 
     private fun producerIsAlive(): Boolean =
