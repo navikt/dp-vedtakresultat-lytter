@@ -34,8 +34,8 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:7.9.1-ce")
 
     // Schema handling
-    implementation("org.apache.avro:avro:1.12.0")
-    implementation("org.apache.avro:avro:1.12.0")
+    implementation("org.apache.avro:avro:1.12.1")
+    implementation("org.apache.avro:avro:1.12.1")
     implementation("io.confluent:kafka-streams-avro-serde:7.9.1")
 
     // Metrics
