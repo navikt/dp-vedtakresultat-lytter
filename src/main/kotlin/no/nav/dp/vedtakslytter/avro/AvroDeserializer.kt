@@ -1,6 +1,6 @@
 package no.nav.dp.vedtakslytter.avro
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.generic.GenericRecord
@@ -30,19 +30,16 @@ class AvroDeserializer : Deserializer<GenericRecord> {
     override fun deserialize(
         topic: String,
         data: ByteArray,
-    ): GenericRecord {
-        return try {
+    ): GenericRecord =
+        try {
             dagpengeVedtakReaderV2.read(null, DecoderFactory.get().binaryDecoder(data, null))
         } catch (e: Exception) {
             logger.error(e) { "Feil ved deserialisering. Data: ${String(data)}" }
             dagpengeVedtakReaderV1.read(null, DecoderFactory.get().binaryDecoder(data, null))
         }
-    }
 
     override fun close() {
     }
 }
 
-fun String.toInputStream(): InputStream {
-    return AvroDeserializer::class.java.getResourceAsStream("/$this")!!
-}
+fun String.toInputStream(): InputStream = AvroDeserializer::class.java.getResourceAsStream("/$this")!!

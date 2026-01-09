@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import no.nav.dp.vedtakslytter.Configuration.httpPort
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -49,8 +48,8 @@ fun main() {
                         Clock.SYSTEM,
                     ),
                 objectMapper = objectMapper,
-                applicationLogger = KotlinLogging.logger("ApplicationLogger"),
-                callLogger = KotlinLogging.logger("CallLogger"),
+                applicationLogger = LoggerFactory.getLogger("ApplicationLogger"),
+                callLogger = LoggerFactory.getLogger("CallLogger"),
                 aliveCheck = { KafkaLytter.isRunning() },
                 port = httpPort,
             ) {}

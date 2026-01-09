@@ -3,12 +3,12 @@ package no.nav.dp.vedtakslytter
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.prometheus.metrics.core.metrics.Counter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
 import no.nav.dp.vedtakslytter.avro.AvroDeserializer
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.generic.GenericRecordBuilder
@@ -62,7 +62,7 @@ object KafkaLytter : CoroutineScope {
     fun cancel() {
         kafkaProducer.close()
         job.cancel()
-        logger.info("Skrur av KafkaLytter")
+        logger.info { "Skrur av KafkaLytter" }
     }
 
     fun isRunning(): Boolean {
@@ -89,7 +89,7 @@ object KafkaLytter : CoroutineScope {
 
     fun run() {
         launch {
-            logger.info("Starter kafka consumer")
+            logger.info { "Starter kafka consumer" }
             KafkaConsumer<String, GenericRecord>(Configuration.consumerProps).use { consumer ->
                 consumer.subscribe(listOf(Configuration.consumerTopic))
                 while (job.isActive) {
@@ -105,7 +105,7 @@ object KafkaLytter : CoroutineScope {
 
                         consumer.commitSync()
                     } catch (e: RetriableException) {
-                        logger.warn("Had a retriable exception, retrying", e)
+                        logger.warn(e) { "Had a retriable exception, retrying" }
                     }
                 }
             }
@@ -189,7 +189,7 @@ class VedtakHandler(
             KafkaLytter.logger.debug { "Sendte bekreftelse på subsumsjon brukt [$subsumsjonBrukt] - offset ${metadata.offset()}" }
         } catch (e: Exception) {
             KafkaLytter.FAILED_KAFKA_OPS.inc()
-            KafkaLytter.logger.error("Kunne ikke sende bekreftelse på subsumsjon", e)
+            KafkaLytter.logger.error(e) { "Kunne ikke sende bekreftelse på subsumsjon" }
             throw e
         }
     }
