@@ -23,12 +23,9 @@ dependencies {
     implementation(libs.konfig)
 
     // Logging
-    val log4j2Version = "2.25.3"
     implementation(libs.kotlin.logging)
-    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
-    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
-    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4j2Version")
-    implementation("org.apache.logging.log4j:log4j-layout-template-json:$log4j2Version")
+    implementation("ch.qos.logback:logback-classic:1.5.24")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 
     // Kafka
     implementation("org.apache.kafka:kafka-clients:7.9.1-ce")

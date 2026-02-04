@@ -28,8 +28,11 @@ spec:
     pool: "{{ KAFKA_POOL }}"
   vault:
     enabled: true
-  secureLogs:
-    enabled: true
+  accessPolicy:
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
   observability:
     logging:
       destinations:
