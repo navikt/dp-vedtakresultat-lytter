@@ -36,7 +36,7 @@ dependencies {
     implementation("io.confluent:kafka-streams-avro-serde:7.9.1")
 
     // Metrics
-    implementation("io.prometheus:prometheus-metrics-core:1.4.3")
+    implementation("io.prometheus:prometheus-metrics-core:1.5.0")
 
     // Test related dependencies
     testImplementation(libs.mockk)
