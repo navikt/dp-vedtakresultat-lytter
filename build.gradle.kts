@@ -24,7 +24,7 @@ dependencies {
 
     // Logging
     implementation(libs.kotlin.logging)
-    implementation("ch.qos.logback:logback-classic:1.5.33")
+    implementation("ch.qos.logback:logback-classic:1.5.34")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 
     // Kafka
