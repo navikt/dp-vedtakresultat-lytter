@@ -1,8 +1,5 @@
 package no.nav.dp.vedtakslytter
 
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.prometheus.metrics.core.metrics.Counter
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +14,7 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.errors.RetriableException
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
@@ -202,11 +200,7 @@ enum class SubsumsjonType {
     MINSTEINNTEKT,
 }
 
-val subsumsjonAdapter =
-    jacksonObjectMapper().apply {
-        registerModule(JavaTimeModule())
-        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-    }
+val subsumsjonAdapter = jacksonObjectMapper()
 
 fun Double.roundedString(): String =
     if (this.toLong().toDouble().equals(this)) {
