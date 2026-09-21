@@ -4,6 +4,7 @@ import de.huxhorn.sulky.ulid.ULID
 import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.shouldBe
 import org.apache.kafka.clients.producer.MockProducer
+import org.apache.kafka.common.Cluster
 import org.apache.kafka.common.serialization.StringSerializer
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
@@ -11,7 +12,7 @@ import java.time.ZonedDateTime
 class VedtakHandlerTest {
     @Test
     fun `Orienterer om brukte minsteinntekt og periodesubsumsjoner`() {
-        val mockProducer = MockProducer(true, StringSerializer(), StringSerializer())
+        val mockProducer = MockProducer(Cluster.empty(), true, null, StringSerializer(), StringSerializer())
         val vedtakHandler = VedtakHandler(mockProducer, "topic")
         vedtakHandler.handleVedtak(nyRettighetMedMinsteInntektOgPeriodeSubsumsjon)
         vedtakHandler.handleVedtak(grunnlagOgSatsSubsumsjon)
