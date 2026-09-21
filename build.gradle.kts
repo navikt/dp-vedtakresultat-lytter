@@ -28,7 +28,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 
     // Kafka
-    implementation("org.apache.kafka:kafka-clients:7.9.10-ce")
+    implementation("org.apache.kafka:kafka-clients:8.3.2-ce")
 
     // Schema handling
     implementation("org.apache.avro:avro:1.12.2")
