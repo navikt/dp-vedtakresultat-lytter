@@ -55,8 +55,8 @@ class AvroDeserializerTestV2 {
     private val ulid = ULID()
     private val arenaOpTsFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSSSSS]")
 
-    fun lagArenaHendelse(): GenericData.Record {
-        return GenericData.Record(AvroDeserializer.dagpengeVedtakSchemaV2).apply {
+    fun lagArenaHendelse(): GenericData.Record =
+        GenericData.Record(AvroDeserializer.dagpengeVedtakSchemaV2).apply {
             put("table", "table")
             put("op_type", "I")
             put("op_ts", ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS).format(arenaOpTsFormat))
@@ -75,5 +75,4 @@ class AvroDeserializerTestV2 {
             put("MOD_DATO", "2020-03-08")
             put("MOD_USER", "BB")
         }
-    }
 }
