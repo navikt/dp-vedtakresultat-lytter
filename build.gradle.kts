@@ -11,7 +11,7 @@ repositories {
 dependencies {
 
     // Naisful app
-    implementation("com.github.navikt.tbd-libs:naisful-app:20260917.2152")
+    implementation("com.github.navikt.tbd-libs:naisful-app:20260930.1309")
 
     // Json (de)serialisering
     implementation(libs.bundles.jackson)
