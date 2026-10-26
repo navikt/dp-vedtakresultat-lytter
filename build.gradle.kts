@@ -33,7 +33,7 @@ dependencies {
     // Schema handling
     implementation("org.apache.avro:avro:1.12.2")
     implementation("org.apache.avro:avro:1.12.2")
-    implementation("io.confluent:kafka-streams-avro-serde:8.3.2")
+    implementation("io.confluent:kafka-streams-avro-serde:8.4.0")
 
     // Metrics
     implementation("io.prometheus:prometheus-metrics-core:1.10.0")
